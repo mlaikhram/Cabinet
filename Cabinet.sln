@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30002.166
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cabinet", "Cabinet\Cabinet.csproj", "{5C75C7F1-FFDF-41E6-92BA-394D3D14A342}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibHotKeys", "LibHotKeys\LibHotKeys.csproj", "{C1286C82-6BE0-46D6-85E2-B81ABDC13756}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3D840087-F26A-43DF-91FB-816B31E4D572}"
+	ProjectSection(SolutionItems) = preProject
+		logo.ico = logo.ico
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5C75C7F1-FFDF-41E6-92BA-394D3D14A342}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C75C7F1-FFDF-41E6-92BA-394D3D14A342}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C75C7F1-FFDF-41E6-92BA-394D3D14A342}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C75C7F1-FFDF-41E6-92BA-394D3D14A342}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1286C82-6BE0-46D6-85E2-B81ABDC13756}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1286C82-6BE0-46D6-85E2-B81ABDC13756}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1286C82-6BE0-46D6-85E2-B81ABDC13756}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1286C82-6BE0-46D6-85E2-B81ABDC13756}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B491CDB5-6C6D-4EDA-B373-3FA40D5AF014}
+	EndGlobalSection
+EndGlobal
