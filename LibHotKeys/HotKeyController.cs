@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace LibHotKeys
+namespace WinApiWrappers
 {
     public class HotKeyController
     {
@@ -30,11 +30,11 @@ namespace LibHotKeys
 
 
         public List<HotKey> RegisteredHotKeys { get; set; } = new List<HotKey>();
-        MessageListenerWindow window;
+        HotKeyMessageListenerWindow window;
         IntPtr windowHandle = IntPtr.Zero;
         private HotKeyController()
         {
-            window = new MessageListenerWindow(this);
+            window = new HotKeyMessageListenerWindow(this);
             windowHandle = window.Handle;
         }
 
@@ -121,11 +121,11 @@ namespace LibHotKeys
         }
     }
 
-    public class MessageListenerWindow : Form
+    public class HotKeyMessageListenerWindow : Form
     {
         const int hotkeyCapture = 0x0312;
         HotKeyController hotKeyController;
-        public MessageListenerWindow(HotKeyController controller)
+        public HotKeyMessageListenerWindow(HotKeyController controller)
         {
             hotKeyController = controller;
         }

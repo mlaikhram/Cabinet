@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LibHotKeys
+namespace WinApiWrappers
 {
     public class AlreadyMappedException : Exception
     {
@@ -15,6 +15,11 @@ namespace LibHotKeys
 
         }
 
+        public AlreadyMappedException(ClipboardEvent clipboardEvent)
+            : base(string.Format("Clipboard Event is already Defined for this {0} purpose", clipboardEvent.Purpose))
+        {
+
+        }
     }
 
     public class KeyNotFoundException : Exception
@@ -26,5 +31,14 @@ namespace LibHotKeys
 
         }
 
+    }
+
+    public class ClipboardEventNotFoundException : Exception
+    {
+        public ClipboardEventNotFoundException(string purpose)
+            : base(string.Format("Clipboard Event not found for this {0} purpose. cannot perform this action", purpose))
+        {
+
+        }
     }
 }

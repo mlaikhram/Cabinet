@@ -9,6 +9,7 @@
         ResizeMode="NoResize"
         ShowInTaskbar="False"
         Deactivated="MainWindow_Deactivated"
+        Closed="Window_Closed"
         Title="MainWindow" Height="550" Width="500">
     <Grid IsEnabled="True">
         <Button x:Name="button" Content="TEST" HorizontalAlignment="Left" VerticalAlignment="Top" Width="227" Margin="143,122,0,0" Height="123" Click="button_Click"/>

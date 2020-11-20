@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LibHotKeys
+namespace WinApiWrappers
 {
     public static class WinApiMethods
     {
@@ -15,6 +15,14 @@ namespace LibHotKeys
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
+        [DllImport("User32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool AddClipboardFormatListener(IntPtr hwnd);
+
+        [DllImport("User32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool RemoveClipboardFormatListener(IntPtr hwnd);
 
     }
     [Flags]

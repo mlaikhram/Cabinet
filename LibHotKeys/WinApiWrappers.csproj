@@ -7,8 +7,8 @@
     <ProjectGuid>{C1286C82-6BE0-46D6-85E2-B81ABDC13756}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LibHotKeys</RootNamespace>
-    <AssemblyName>LibHotKeys</AssemblyName>
+    <RootNamespace>WinApiWrappers</RootNamespace>
+    <AssemblyName>WinApiWrappers</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -43,6 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlreadyMappedException.cs" />
+    <Compile Include="ClipboardEvent.cs" />
+    <Compile Include="ClipboardEventController.cs" />
     <Compile Include="HotKeyController.cs" />
     <Compile Include="HotKey.cs" />
     <Compile Include="WinApiMethods.cs" />

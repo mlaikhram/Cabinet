@@ -97,9 +97,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LibHotKeys\LibHotKeys.csproj">
+    <ProjectReference Include="..\LibHotKeys\WinApiWrappers.csproj">
       <Project>{c1286c82-6be0-46d6-85e2-b81abdc13756}</Project>
-      <Name>LibHotKeys</Name>
+      <Name>WinApiWrappers</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

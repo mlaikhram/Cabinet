@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace LibHotKeys
+namespace WinApiWrappers
 {
     public class HotKey
     {
