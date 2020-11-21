@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
@@ -12,6 +13,7 @@ using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using WinApiWrappers;
+using Clipboard = System.Windows.Clipboard;
 
 namespace Cabinet
 {
@@ -21,10 +23,14 @@ namespace Cabinet
     public partial class MainWindow : Window
     {
         private NotifyIcon notifyIcon = null;
+        private LinkedList<ClipboardObject> recentClipboardObjects;
+        private bool selfCopy;
 
         public MainWindow()
         {
             InitializeComponent();
+            recentClipboardObjects = new LinkedList<ClipboardObject>();
+            selfCopy = false;
 
             // tray icon
             notifyIcon = new NotifyIcon();
@@ -58,28 +64,48 @@ namespace Cabinet
 
         public void SaveClipboardToRecent()
         {
-            Console.WriteLine("saving clipboard");
+            Console.WriteLine("attempting to save clipboard to recent");
+            if (!selfCopy)
+            {
+                Console.WriteLine("saving clipboard");
+                if (Clipboard.ContainsText())
+                {
+                    Console.WriteLine(Clipboard.GetText());
 
-            // TODO: save to list of recent clipboard objects to display in main window
+                    TextClipboardObject textClipboardObject = new TextClipboardObject(this, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), Clipboard.GetText());
+                    recentClipboardObjects.AddFirst(textClipboardObject);
+                    ContentPanel.Children.Insert(0, textClipboardObject.ClipboardContainer);
+                }
+                // TODO: save to list of recent clipboard objects to display in main window
+                // wrap panel for clipboard list
+            }
+            else
+            {
+                Console.WriteLine("ignoring self copy");
+                selfCopy = false;
+            }
         }
 
-        void MainWindow_Deactivated(object sender, EventArgs e)
+        public void IncomingSelfCopy()
+        {
+            selfCopy = true;
+        }
+
+        public void HideWindow()
         {
             Console.WriteLine("deactivated");
             Hide();
             WindowState = WindowState.Minimized;
         }
 
+        void MainWindow_Deactivated(object sender, EventArgs e)
+        {
+            HideWindow();
+        }
+
         void NotifyIcon_Click(object sender, EventArgs e)
         {
             Console.WriteLine("clicked toolbar icon");
-        }
-
-        private void button_Click(object sender, RoutedEventArgs e)
-        {
-            Console.WriteLine("copying to clipboard content");
-            System.Windows.Clipboard.SetText("looks like its working");
-            WindowState = WindowState.Minimized;
         }
 
         private void Window_Closed(object sender, EventArgs e)

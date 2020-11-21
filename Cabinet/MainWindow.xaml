@@ -8,10 +8,32 @@
         WindowStyle="None"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
+        UseLayoutRounding="True"
         Deactivated="MainWindow_Deactivated"
         Closed="Window_Closed"
         Title="MainWindow" Height="550" Width="500">
-    <Grid IsEnabled="True">
-        <Button x:Name="button" Content="TEST" HorizontalAlignment="Left" VerticalAlignment="Top" Width="227" Margin="143,122,0,0" Height="123" Click="button_Click"/>
-    </Grid>
+    <DockPanel x:Name="MainPanel" IsEnabled="True">
+        <StackPanel x:Name="ToolPanel" Height="50" DockPanel.Dock="Top" Background="#FF4B4B4B" Orientation="Horizontal" UseLayoutRounding="True">
+            <Image x:Name="Settings" Width="40" Height="40" Margin="20,0" Source="settings.png"/>
+            <Image x:Name="SearchIcon" Width="30" Height="30" Margin="20,0,10,0" Source="search.png"/>
+            <TextBox x:Name="Search" TextWrapping="Wrap" Height="30" Width="350" VerticalContentAlignment="Center" FontSize="18" Margin="0" Background="#FF212121" Foreground="#FFBFBFBF" SelectionBrush="#FF616161" BorderBrush="#FFB8B8B8"/>
+        </StackPanel>
+        <ScrollViewer x:Name="CategoryScrollViewer" Background="#FF343434" Width="80" Height="500" VerticalScrollBarVisibility="Hidden">
+            <StackPanel x:Name="CategoryPanel" Background="#FF343434" VerticalAlignment="Top" Width="80" UseLayoutRounding="True" ScrollViewer.VerticalScrollBarVisibility="Hidden" MinHeight="500">
+                <Image x:Name="Recent" Margin="10,10,10,5" Source="balloon.png" MinWidth="60" MinHeight="60" Width="60" Height="60"/>
+                <Image x:Name="New" Margin="10,5" Source="eyes.png" MinWidth="60" MinHeight="60" Width="60" Height="60"/>
+                <Image x:Name="New1" Margin="10,5" Source="eyes.png" MinWidth="60" MinHeight="60" Width="60" Height="60"/>
+                <Image x:Name="New2" Margin="10,5" Source="eyes.png" MinWidth="60" MinHeight="60" Width="60" Height="60"/>
+                <Image x:Name="New3" Margin="10,5" Source="eyes.png" MinWidth="60" MinHeight="60" Width="60" Height="60"/>
+                <Image x:Name="New4" Margin="10,5" Source="eyes.png" MinWidth="60" MinHeight="60" Width="60" Height="60"/>
+                <Image x:Name="New5" Margin="10,5" Source="eyes.png" MinWidth="60" MinHeight="60" Width="60" Height="60"/>
+                <Image x:Name="New6" Margin="10,5" Source="eyes.png" MinWidth="60" MinHeight="60" Width="60" Height="60"/>
+                <Image x:Name="New7" Margin="10,5" Source="eyes.png" MinWidth="60" MinHeight="60" Width="60" Height="60"/>
+                <Image x:Name="New8" Margin="10,5" Source="eyes.png" MinWidth="60" MinHeight="60" Width="60" Height="60"/>
+            </StackPanel>
+        </ScrollViewer>
+        <ScrollViewer x:Name="ContentScrollViewer" Background="#FF212121" Width="420" Height="500" VerticalScrollBarVisibility="Hidden">
+            <WrapPanel x:Name="ContentPanel" VerticalAlignment="Top" Background="#FF212121" UseLayoutRounding="True" MinHeight="500" />
+        </ScrollViewer>
+    </DockPanel>
 </Window>

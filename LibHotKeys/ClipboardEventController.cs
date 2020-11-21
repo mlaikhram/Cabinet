@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -87,15 +88,21 @@ namespace WinApiWrappers
     {
         const int clipboardDraw = 0x031D;
         public ClipboardEvent ClipboardEvent { get; private set; }
+
+        private bool isOnCooldown;
+
         public ClipboardEventListenerWindow(ClipboardEvent clipboardEvent)
         {
             ClipboardEvent = clipboardEvent;
+            isOnCooldown = false;
         }
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg == clipboardDraw)
+            if (!isOnCooldown && m.Msg == clipboardDraw)
             {
+                isOnCooldown = true;
                 ClipboardEvent.OnClipboardDraw();
+                Task.Delay(10).ContinueWith(_ => isOnCooldown = false);
             }
 
             base.WndProc(ref m);
