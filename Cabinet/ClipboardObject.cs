@@ -1,19 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+using Clipboard = System.Windows.Forms.Clipboard;
+using Image = System.Windows.Controls.Image;
 
 namespace Cabinet
 {
     public abstract class ClipboardObject
     {
         private MainWindow parentWindow;
+        private Label label;
+        public string Label
+        {
+            get
+            {
+                return label.Content.ToString();
+            }
+            set
+            {
+                label.Content = value;
+            }
+        }
+
         private StackPanel stackPanel;
         private Border clipboardContainer;
         public Border ClipboardContainer {
@@ -35,18 +57,19 @@ namespace Cabinet
         protected ClipboardObject(MainWindow parentWindow, string label)
         {
             this.parentWindow = parentWindow;
-
-            stackPanel = new StackPanel();
-            stackPanel.Children.Add(new Label
+            this.label = new Label
             {
                 Content = label,
-                Background = (SolidColorBrush) new BrushConverter().ConvertFrom("#FF818181"),
-                Foreground = (SolidColorBrush) new BrushConverter().ConvertFrom("#FFFFFFFF"),
+                Background = (SolidColorBrush)new BrushConverter().ConvertFrom("#FF818181"),
+                Foreground = (SolidColorBrush)new BrushConverter().ConvertFrom("#FFFFFFFF"),
                 FontSize = 8,
                 HorizontalContentAlignment = HorizontalAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center,
                 Padding = new Thickness(0)
-            });
+            };
+
+            stackPanel = new StackPanel();
+            stackPanel.Children.Add(this.label);
 
             clipboardContainer = new Border
             {
@@ -86,6 +109,7 @@ namespace Cabinet
             ClipboardContainer.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#FF666666");
         }
 
+        public abstract bool MatchesClipboard();
         protected abstract void CopyContentToClipboard();
         protected abstract FrameworkElement GenerateClipboardPreviewPanel();
     }
@@ -98,6 +122,11 @@ namespace Cabinet
             : base(parentWindow, label)
         {
             this.text = text;
+        }
+
+        public override bool MatchesClipboard()
+        {
+            return Clipboard.ContainsText() && Clipboard.GetText() == text;
         }
 
         protected override void CopyContentToClipboard()
@@ -120,6 +149,162 @@ namespace Cabinet
             {
                 preview.Inlines.Add(new Run(lines[i]));
             }
+
+            return preview;
+        }
+    }
+
+    public class ImageClipboardObject : ClipboardObject
+    {
+        protected System.Drawing.Image image;
+
+        public ImageClipboardObject(MainWindow parentWindow, string label, System.Drawing.Image image)
+            : base(parentWindow, label)
+        {
+            this.image = image;
+        }
+
+        public override bool MatchesClipboard()
+        {
+            return Clipboard.ContainsImage() && AreEqual(new Bitmap(Clipboard.GetImage()), new Bitmap(image));
+        }
+
+        protected override void CopyContentToClipboard()
+        {
+            Clipboard.SetImage(image);
+        }
+
+        protected override FrameworkElement GenerateClipboardPreviewPanel()
+        {
+            return new Image
+            {
+                Source = ImageToBitMapImage(image),
+                Stretch = Stretch.UniformToFill,
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+        }
+
+        private BitmapImage ImageToBitMapImage(System.Drawing.Image image)
+        {
+            using (var ms = new MemoryStream())
+            {
+                image.Save(ms, ImageFormat.Bmp);
+                ms.Seek(0, SeekOrigin.Begin);
+
+                var bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.StreamSource = ms;
+                bitmapImage.EndInit();
+
+                return bitmapImage;
+            }
+        }
+
+        private unsafe bool AreEqual(Bitmap b1, Bitmap b2)
+        {
+            if (b1.Size != b2.Size)
+            {
+                return false;
+            }
+
+            if (b1.PixelFormat != b2.PixelFormat)
+            {
+                return false;
+            }
+
+            if (b1.PixelFormat != System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+            {
+                return false;
+            }
+
+            System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0, 0, b1.Width, b1.Height);
+            BitmapData data1
+                = b1.LockBits(rect, ImageLockMode.ReadOnly, b1.PixelFormat);
+            BitmapData data2
+                = b2.LockBits(rect, ImageLockMode.ReadOnly, b1.PixelFormat);
+
+            int* p1 = (int*)data1.Scan0;
+            int* p2 = (int*)data2.Scan0;
+            int byteCount = b1.Height * data1.Stride / 4; //only Format32bppArgb 
+
+            bool result = true;
+            for (int i = 0; i < byteCount; ++i)
+            {
+                if (*p1++ != *p2++)
+                {
+                    result = false;
+                    break;
+                }
+            }
+
+            b1.UnlockBits(data1);
+            b2.UnlockBits(data2);
+
+            return result;
+        }
+    }
+
+    public class FileDropListClipboardObject : ClipboardObject
+    {
+        protected StringCollection fileDropList;
+
+        public FileDropListClipboardObject(MainWindow parentWindow, string label, StringCollection fileDropList)
+            : base(parentWindow, label)
+        {
+            this.fileDropList = fileDropList;
+        }
+
+        public override bool MatchesClipboard()
+        {
+            if (Clipboard.ContainsFileDropList())
+            {
+                StringCollection clipboardFileDropList = Clipboard.GetFileDropList();
+                if (clipboardFileDropList.Count == fileDropList.Count)
+                {
+                    foreach (string filepath in fileDropList)
+                    {
+                        if (!clipboardFileDropList.Contains(filepath))
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        protected override void CopyContentToClipboard()
+        {
+            Clipboard.SetFileDropList(fileDropList);
+        }
+
+        protected override FrameworkElement GenerateClipboardPreviewPanel()
+        {
+            UniformGrid preview = new UniformGrid();
+
+            foreach (string filepath in fileDropList)
+            {
+                Image thumbnail = new Image
+                {
+                    Source = new BitmapImage(new Uri(System.IO.Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "settings.png"))),
+                    Height = 150,
+                    Stretch = Stretch.Uniform,
+                    HorizontalAlignment = HorizontalAlignment.Center
+                };
+                preview.Children.Add(thumbnail);
+            }
+            //TextBlock preview = new TextBlock
+            //{
+            //    TextWrapping = TextWrapping.Wrap,
+            //    Background = new SolidColorBrush(Colors.White)
+            //};
+
+            //foreach (string file in fileDropList)
+            //{
+            //    preview.Inlines.Add(new Run(file));
+            //}
 
             return preview;
         }

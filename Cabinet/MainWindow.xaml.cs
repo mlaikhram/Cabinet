@@ -13,7 +13,7 @@ using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using WinApiWrappers;
-using Clipboard = System.Windows.Clipboard;
+using Clipboard = System.Windows.Forms.Clipboard;
 
 namespace Cabinet
 {
@@ -67,17 +67,51 @@ namespace Cabinet
             Console.WriteLine("attempting to save clipboard to recent");
             if (!selfCopy)
             {
-                Console.WriteLine("saving clipboard");
-                if (Clipboard.ContainsText())
+                Console.WriteLine("checking for recent duplicate");
+                ClipboardObject duplicateObject = null;
+                foreach (ClipboardObject clipboardObject in recentClipboardObjects)
                 {
-                    Console.WriteLine(Clipboard.GetText());
-
-                    TextClipboardObject textClipboardObject = new TextClipboardObject(this, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), Clipboard.GetText());
-                    recentClipboardObjects.AddFirst(textClipboardObject);
-                    ContentPanel.Children.Insert(0, textClipboardObject.ClipboardContainer);
+                    if (clipboardObject.MatchesClipboard())
+                    {
+                        duplicateObject = clipboardObject;
+                        break;
+                    }
                 }
-                // TODO: save to list of recent clipboard objects to display in main window
-                // wrap panel for clipboard list
+                if (duplicateObject != null)
+                {
+                    Console.WriteLine("moving duplicate clipboard to most recent");
+                    recentClipboardObjects.Remove(duplicateObject);
+                    ContentPanel.Children.Remove(duplicateObject.ClipboardContainer);
+                    duplicateObject.Label = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                    recentClipboardObjects.AddFirst(duplicateObject);
+                    ContentPanel.Children.Insert(0, duplicateObject.ClipboardContainer);
+                }
+                else
+                {
+                    Console.WriteLine("not a duplicate, finding format to save as");
+                    if (Clipboard.ContainsText())
+                    {
+                        Console.WriteLine(Clipboard.GetText());
+
+                        TextClipboardObject textClipboardObject = new TextClipboardObject(this, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), Clipboard.GetText());
+                        recentClipboardObjects.AddFirst(textClipboardObject);
+                        ContentPanel.Children.Insert(0, textClipboardObject.ClipboardContainer);
+                    }
+                    else if (Clipboard.ContainsImage())
+                    {
+                        ImageClipboardObject imageClipboardObject = new ImageClipboardObject(this, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), Clipboard.GetImage());
+                        recentClipboardObjects.AddFirst(imageClipboardObject);
+                        ContentPanel.Children.Insert(0, imageClipboardObject.ClipboardContainer);
+                    }
+                    else if (Clipboard.ContainsFileDropList())
+                    {
+                        FileDropListClipboardObject fileDropListClipboardObject = new FileDropListClipboardObject(this, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), Clipboard.GetFileDropList());
+                        recentClipboardObjects.AddFirst(fileDropListClipboardObject);
+                        ContentPanel.Children.Insert(0, fileDropListClipboardObject.ClipboardContainer);
+                    }
+                    // TODO: save to list of recent clipboard objects to display in main window
+                    // wrap panel for clipboard list
+                }
             }
             else
             {
