@@ -100,12 +100,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LibHotKeys\WinApiWrappers.csproj">
-      <Project>{c1286c82-6be0-46d6-85e2-b81abdc13756}</Project>
-      <Name>WinApiWrappers</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="eyes.png" />
   </ItemGroup>
   <ItemGroup>
@@ -118,7 +112,10 @@
     <Resource Include="settings.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="received_999912633398244.jpeg" />
+    <ProjectReference Include="..\WinApiWrappers\WinApiWrappers.csproj">
+      <Project>{c1286c82-6be0-46d6-85e2-b81abdc13756}</Project>
+      <Name>WinApiWrappers</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
