@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,8 +10,11 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using System.Windows.Threading;
+using Windows.Storage;
+using Windows.Storage.FileProperties;
 using Clipboard = System.Windows.Forms.Clipboard;
+using FileAttributes = System.IO.FileAttributes;
 using Image = System.Windows.Controls.Image;
 
 namespace Cabinet
@@ -43,8 +42,11 @@ namespace Cabinet
             {
                 if (clipboardContainer.Child == null)
                 {
-                    AddClipboardPreviewPanelToStackPanel();
-                    clipboardContainer.Child = stackPanel;
+                    Dispatcher.CurrentDispatcher.BeginInvoke((Action)(() =>
+                    {
+                        AddClipboardPreviewPanelToStackPanel();
+                        clipboardContainer.Child = stackPanel;
+                    }));
                 }
                 return clipboardContainer;
             }
@@ -289,25 +291,68 @@ namespace Cabinet
             {
                 Image thumbnail = new Image
                 {
-                    Source = new BitmapImage(new Uri(System.IO.Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "settings.png"))),
+                    Source = new BitmapImage(new Uri(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "settings.png"))),
                     Height = 150,
                     Stretch = Stretch.Uniform,
                     HorizontalAlignment = HorizontalAlignment.Center
                 };
+
+                Dispatcher.CurrentDispatcher.BeginInvoke((Action) (() => {
+                    thumbnail.ToolTip = filepath;
+                    try
+                    {
+                        thumbnail.Source = GetFileThumbnail(filepath).Result;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("unhandled! " + e.Message);
+                        thumbnail.ToolTip = e.Message;
+                    }
+                }));
                 preview.Children.Add(thumbnail);
             }
-            //TextBlock preview = new TextBlock
-            //{
-            //    TextWrapping = TextWrapping.Wrap,
-            //    Background = new SolidColorBrush(Colors.White)
-            //};
-
-            //foreach (string file in fileDropList)
-            //{
-            //    preview.Inlines.Add(new Run(file));
-            //}
-
             return preview;
+        }
+
+        private static async Task<BitmapImage> GetFileThumbnail(string filepath)
+        {
+            try
+            {
+                StorageItemThumbnail thumbnail;
+                FileAttributes attr = File.GetAttributes(@filepath);
+                if (attr.HasFlag(FileAttributes.Directory))
+                {
+                    StorageFolder folder = StorageFolder.GetFolderFromPathAsync(@filepath).AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
+                    thumbnail = await folder.GetThumbnailAsync(ThumbnailMode.SingleItem, 150).AsTask().ConfigureAwait(false);
+                }
+                else
+                {
+                    StorageFile file = StorageFile.GetFileFromPathAsync(@filepath).AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
+                    thumbnail = await file.GetThumbnailAsync(ThumbnailMode.SingleItem, 150).AsTask().ConfigureAwait(false);
+                }
+                BitmapImage image = new BitmapImage();
+                using (Stream stream = thumbnail.AsStreamForRead())
+                {
+                    image.BeginInit();
+                    image.StreamSource = stream;
+                    image.CacheOption = BitmapCacheOption.OnLoad;
+                    image.EndInit();
+                    image.Freeze();
+                }
+                return image;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Console.WriteLine("invalid permission on " + filepath);
+                // TODO: set to unauthorizes BitmapImage
+                return new BitmapImage(new Uri(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "settings.png")));
+            }
+            catch (FileNotFoundException)
+            {
+                Console.WriteLine("file not found: " + filepath);
+                // TODO: set to missing file BitmapImage
+                return new BitmapImage(new Uri(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "settings.png")));
+            }
         }
     }
 }

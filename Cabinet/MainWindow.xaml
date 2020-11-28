@@ -36,7 +36,7 @@
             <WrapPanel x:Name="ContentPanel" VerticalAlignment="Top" Background="#FF212121" UseLayoutRounding="True" MinHeight="500">
                 <Border Width="132" Height="164" Margin="6,6,0,0" BorderBrush="#FF666666" BorderThickness="2">
                     <StackPanel>
-                        <UniformGrid Height="150" />
+                        <TextBlock Height="150" />
                         <Label Content="label" Background="#FF818181" Foreground="#FFFFFFFF" FontSize="8" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0"/>
                     </StackPanel>
                 </Border>
