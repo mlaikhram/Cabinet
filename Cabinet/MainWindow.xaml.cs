@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Media;
 using WinApiWrappers;
 using Clipboard = System.Windows.Forms.Clipboard;
 
@@ -21,7 +22,10 @@ namespace Cabinet
         public MainWindow()
         {
             InitializeComponent();
+            CategoryForm.MainWindow = this;
             recentClipboardObjects = new LinkedList<ClipboardObject>();
+            // DBManager.Instance.AddCategory("test", "icons/default.png", Colors.Red);
+
             selfCopy = false;
 
             // tray icon
@@ -76,7 +80,7 @@ namespace Cabinet
                     ContentPanel.Children.Remove(duplicateObject.ClipboardContainer);
                     duplicateObject.Label = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
                     recentClipboardObjects.AddFirst(duplicateObject);
-                    ContentPanel.Children.Insert(0, duplicateObject.ClipboardContainer);
+                    ContentPanel.Children.Insert(1, duplicateObject.ClipboardContainer);
                 }
                 else
                 {
@@ -87,19 +91,19 @@ namespace Cabinet
 
                         TextClipboardObject textClipboardObject = new TextClipboardObject(this, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), Clipboard.GetText());
                         recentClipboardObjects.AddFirst(textClipboardObject);
-                        ContentPanel.Children.Insert(0, textClipboardObject.ClipboardContainer);
+                        ContentPanel.Children.Insert(1, textClipboardObject.ClipboardContainer);
                     }
                     else if (Clipboard.ContainsImage())
                     {
                         ImageClipboardObject imageClipboardObject = new ImageClipboardObject(this, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), Clipboard.GetImage());
                         recentClipboardObjects.AddFirst(imageClipboardObject);
-                        ContentPanel.Children.Insert(0, imageClipboardObject.ClipboardContainer);
+                        ContentPanel.Children.Insert(1, imageClipboardObject.ClipboardContainer);
                     }
                     else if (Clipboard.ContainsFileDropList())
                     {
                         FileDropListClipboardObject fileDropListClipboardObject = new FileDropListClipboardObject(this, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), Clipboard.GetFileDropList());
                         recentClipboardObjects.AddFirst(fileDropListClipboardObject);
-                        ContentPanel.Children.Insert(0, fileDropListClipboardObject.ClipboardContainer);
+                        ContentPanel.Children.Insert(1, fileDropListClipboardObject.ClipboardContainer);
                     }
                     // TODO: save to list of recent clipboard objects to display in main window
                     // wrap panel for clipboard list
@@ -141,6 +145,12 @@ namespace Cabinet
 
             // clipboard event
             ClipboardEventController.Instance.UnRegisterClipboardEvent("Add to Recents");
+        }
+
+        private void CreateCategory(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Console.WriteLine("creatiing category form");
+            CategoryForm.CreateCategoryForm();
         }
     }
 }

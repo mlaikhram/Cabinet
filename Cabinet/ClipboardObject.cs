@@ -77,7 +77,7 @@ namespace Cabinet
             {
                 Width = 132,
                 Height = 164,
-                Margin = new Thickness(6, 6, 0, 0),
+                Margin = new Thickness(6, 0, 0, 6),
                 BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#FF666666"),
                 BorderThickness = new Thickness(2),
                 Background = new SolidColorBrush(Colors.Transparent)
