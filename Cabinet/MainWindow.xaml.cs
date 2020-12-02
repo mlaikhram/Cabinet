@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Media;
+using System.Windows.Threading;
 using WinApiWrappers;
 using Clipboard = System.Windows.Forms.Clipboard;
+
 
 namespace Cabinet
 {
@@ -16,15 +19,26 @@ namespace Cabinet
     public partial class MainWindow : Window
     {
         private NotifyIcon notifyIcon = null;
-        private LinkedList<ClipboardObject> recentClipboardObjects;
+        //private LinkedList<ClipboardObject> recentClipboardObjects;
+        private readonly List<Category> categories;
+        public ReadOnlyCollection<Category> Categories => categories.AsReadOnly();
+        public long CurrentCategoryId { get; private set; }
         private bool selfCopy;
 
         public MainWindow()
         {
             InitializeComponent();
-            CategoryForm.MainWindow = this;
-            recentClipboardObjects = new LinkedList<ClipboardObject>();
+            CategoryForm.ParentWindow = this;
+            //recentClipboardObjects = new LinkedList<ClipboardObject>();
+            categories = new List<Category>();
+            Category recentCategory = new Category(this);
+            AddCategory(recentCategory);
+            // TODO: loop over db entries to add categories
+            SetActiveCategory(recentCategory.Id);
             // DBManager.Instance.AddCategory("test", "icons/default.png", Colors.Red);
+
+            AddCategoryBorder.MouseEnter += (sender, e) => ((System.Windows.Controls.Image) AddCategoryBorder.Child).Margin = new Thickness(5);
+            AddCategoryBorder.MouseLeave += (sender, e) => ((System.Windows.Controls.Image) AddCategoryBorder.Child).Margin = new Thickness(10);
 
             selfCopy = false;
 
@@ -58,6 +72,31 @@ namespace Cabinet
             Activate();
         }
 
+        public void AddCategory(Category category)
+        {
+            CategoryPanel.Children.Insert(CategoryPanel.Children.Count - 1, category.Icon);
+            categories.Add(category);
+            SetActiveCategory(category.Id);
+        }
+
+        public void SetActiveCategory(long id)
+        {
+            Category selectedCategory = categories.Where((category) => category.Id == id).FirstOrDefault();
+            if (selectedCategory != null && selectedCategory.Id != CurrentCategoryId)
+            {
+                CurrentCategory.Content = selectedCategory.Name;
+                ContentPanel.Children.RemoveRange(1, ContentPanel.Children.Count - 1);
+                Dispatcher.CurrentDispatcher.BeginInvoke((Action)(() =>
+                {
+                    foreach (ClipboardObject clipboardObject in selectedCategory.ClipboardObjects)
+                    {
+                        ContentPanel.Children.Add(clipboardObject.ClipboardContainer);
+                    }
+                }));
+                CurrentCategoryId = selectedCategory.Id;
+            }
+        }
+
         public void SaveClipboardToRecent()
         {
             Console.WriteLine("attempting to save clipboard to recent");
@@ -65,7 +104,7 @@ namespace Cabinet
             {
                 Console.WriteLine("checking for recent duplicate");
                 ClipboardObject duplicateObject = null;
-                foreach (ClipboardObject clipboardObject in recentClipboardObjects)
+                foreach (ClipboardObject clipboardObject in categories[0].ClipboardObjects)
                 {
                     if (clipboardObject.MatchesClipboard())
                     {
@@ -76,37 +115,36 @@ namespace Cabinet
                 if (duplicateObject != null)
                 {
                     Console.WriteLine("moving duplicate clipboard to most recent");
-                    recentClipboardObjects.Remove(duplicateObject);
+                    categories[0].RemoveClipboardObject(duplicateObject, false);
                     ContentPanel.Children.Remove(duplicateObject.ClipboardContainer);
                     duplicateObject.Label = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-                    recentClipboardObjects.AddFirst(duplicateObject);
+                    categories[0].AddClipboardObject(duplicateObject, false);
                     ContentPanel.Children.Insert(1, duplicateObject.ClipboardContainer);
                 }
                 else
                 {
+                    ClipboardObject newClipboardObject = null;
                     Console.WriteLine("not a duplicate, finding format to save as");
                     if (Clipboard.ContainsText())
                     {
-                        Console.WriteLine(Clipboard.GetText());
-
-                        TextClipboardObject textClipboardObject = new TextClipboardObject(this, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), Clipboard.GetText());
-                        recentClipboardObjects.AddFirst(textClipboardObject);
-                        ContentPanel.Children.Insert(1, textClipboardObject.ClipboardContainer);
+                        newClipboardObject = new TextClipboardObject(this, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), Clipboard.GetText());
                     }
                     else if (Clipboard.ContainsImage())
                     {
-                        ImageClipboardObject imageClipboardObject = new ImageClipboardObject(this, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), Clipboard.GetImage());
-                        recentClipboardObjects.AddFirst(imageClipboardObject);
-                        ContentPanel.Children.Insert(1, imageClipboardObject.ClipboardContainer);
+                        newClipboardObject = new ImageClipboardObject(this, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), Clipboard.GetImage());
                     }
                     else if (Clipboard.ContainsFileDropList())
                     {
-                        FileDropListClipboardObject fileDropListClipboardObject = new FileDropListClipboardObject(this, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), Clipboard.GetFileDropList());
-                        recentClipboardObjects.AddFirst(fileDropListClipboardObject);
-                        ContentPanel.Children.Insert(1, fileDropListClipboardObject.ClipboardContainer);
+                        newClipboardObject = new FileDropListClipboardObject(this, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), Clipboard.GetFileDropList());
                     }
-                    // TODO: save to list of recent clipboard objects to display in main window
-                    // wrap panel for clipboard list
+                    if (newClipboardObject != null)
+                    {
+                        categories[0].AddClipboardObject(newClipboardObject, false);
+                        if (CurrentCategoryId == categories[0].Id)
+                        {
+                            ContentPanel.Children.Insert(1, newClipboardObject.ClipboardContainer);
+                        }
+                    }
                 }
             }
             else

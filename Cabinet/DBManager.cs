@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Windows.Media;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cabinet
 {
@@ -36,7 +30,7 @@ namespace Cabinet
 
                 SQLiteCommand cmd = new SQLiteCommand(connection)
                 {
-                    CommandText = @"CREATE TABLE IF NOT EXISTS categories(id INTEGER PRIMARY KEY, name TEXT UNIQUE NOT NULL, icon TEXT, color TEXT NOT NULL)"
+                    CommandText = @"CREATE TABLE IF NOT EXISTS categories(id INTEGER PRIMARY KEY, name TEXT UNIQUE NOT NULL, iconPath TEXT, color TEXT NOT NULL)"
                 };
                 cmd.ExecuteNonQuery();
 
@@ -50,7 +44,7 @@ namespace Cabinet
             }
         }
 
-        public void AddCategory(string name, string icon, Color color)
+        public long AddCategory(string name, string icon, Color color)
         {
             using (SQLiteConnection connection = new SQLiteConnection(CONNECTION_URI))
             {
@@ -58,11 +52,12 @@ namespace Cabinet
 
                 SQLiteCommand cmd = new SQLiteCommand(connection)
                 {
-                    CommandText = string.Format(@"INSERT INTO categories(name, icon, color) VALUES ('{0}', '{1}', '{2}')", name, icon, color.ToString())
+                    CommandText = string.Format(@"INSERT INTO categories(name, iconPath, color) VALUES ('{0}', '{1}', '{2}')", name, icon, color.ToString())
                 };
                 cmd.ExecuteNonQuery();
 
                 Console.WriteLine("category added");
+                return connection.LastInsertRowId;
             }
         }
     }

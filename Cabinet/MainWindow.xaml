@@ -22,17 +22,8 @@
             </StackPanel>
             <ScrollViewer x:Name="CategoryScrollViewer" Background="#FF343434" Width="80" Height="500" VerticalScrollBarVisibility="Hidden">
                 <StackPanel x:Name="CategoryPanel" Background="#FF343434" VerticalAlignment="Top" Width="80" UseLayoutRounding="True" ScrollViewer.VerticalScrollBarVisibility="Hidden" MinHeight="500">
-                    <Border Margin="10,10,10,5" BorderBrush="White" BorderThickness="2" CornerRadius="10" Height="60" Width="60" Background="#FF3DA0BD">
-                        <Image x:Name="Recent" Source="balloon.png" Margin="5"/>
-                    </Border>
-                    <Border Margin="10,5,10,5" BorderBrush="White" BorderThickness="2" CornerRadius="10" Height="60" Width="60" Background="#FF3DA0BD">
-                        <Image Source="eyes.png" Margin="5"/>
-                    </Border>
-                    <Border Margin="10,5,10,5" BorderBrush="White" BorderThickness="2" CornerRadius="10" Height="60" Width="60" Background="#FF3DA0BD">
-                        <Image Source="eyes.png" Margin="5"/>
-                    </Border>
-                    <Border Margin="10,5,10,10" BorderBrush="White" BorderThickness="2" CornerRadius="10" Height="60" Width="60" Background="#FF3DA0BD" MouseLeftButtonUp="CreateCategory">
-                        <Image Source="eyes.png" Margin="5"/>
+                    <Border x:Name="AddCategoryBorder" Margin="10,5,10,10" BorderBrush="White" BorderThickness="2" CornerRadius="10" Height="60" Width="60" Background="AntiqueWhite" MouseLeftButtonUp="CreateCategory">
+                        <Image Source="plus.png" Margin="10"/>
                     </Border>
                 </StackPanel>
             </ScrollViewer>

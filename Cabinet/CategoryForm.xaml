@@ -50,7 +50,7 @@
             <Label x:Name="TitleLabel" Content="Create Category" Background="#FF4B4B4B" Foreground="#FFFFFFFF" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,2,0,5"/>
             <Label Content="Select Icon" Foreground="#FFFFFFFF" FontSize="12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,20,0,0"/>
             <Border x:Name="IconBorder" Margin="10,5,10,5" BorderBrush="White" BorderThickness="2" CornerRadius="10" Height="60" Width="60" Background="White">
-                <Image x:Name="IconPreview" Source="eyes.png" Margin="5"/>
+                <Image x:Name="IconPreview" Source="recent.png" Margin="10"/>
             </Border>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Label Content="Background Color" Foreground="#FFFFFFFF" FontSize="12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0,0,10,0"/>
@@ -58,11 +58,7 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="50,40,0,0">
                 <Label Content="Icon:" Foreground="#FFFFFFFF" FontSize="12" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Padding="0,0,10,0" Width="50"/>
-                <ComboBox x:Name="SelectedIcon" SelectedIndex="0" Height="25" Width="140" VerticalContentAlignment="Center" FontSize="12" Margin="0" Background="#FF151515" Foreground="White" BorderBrush="#FFB8B8B8" Style="{StaticResource ComboBoxBG}" SelectionChanged="SelectedIcon_SelectionChanged">
-                    <ComboBoxItem Content="Default" Height="25" Width="140" VerticalContentAlignment="Center" FontSize="12" Margin="0" Background="#FF151515" Foreground="White" BorderBrush="#FFB8B8B8"/>
-                    <ComboBoxItem Content="Circle" Height="25" Width="140" VerticalContentAlignment="Center" FontSize="12" Margin="0" Background="#FF151515" Foreground="White" BorderBrush="#FFB8B8B8"/>
-                    <ComboBoxItem Content="Box" Height="25" Width="140" VerticalContentAlignment="Center" FontSize="12" Margin="0" Background="#FF151515" Foreground="White" BorderBrush="#FFB8B8B8"/>
-                </ComboBox>
+                <ComboBox x:Name="SelectedIcon" SelectedIndex="0" Height="25" Width="140" VerticalContentAlignment="Center" FontSize="12" Margin="0" Background="#FF151515" Foreground="White" BorderBrush="#FFB8B8B8" Style="{StaticResource ComboBoxBG}" SelectionChanged="SelectedIcon_SelectionChanged"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="50,10,0,0">
                 <Label Content="Name:" Foreground="#FFFFFFFF" FontSize="12" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Padding="0,0,10,0" Width="50"/>

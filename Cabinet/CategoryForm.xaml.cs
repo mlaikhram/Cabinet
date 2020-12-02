@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Cabinet
 {
@@ -20,13 +14,20 @@ namespace Cabinet
     /// </summary>
     public partial class CategoryForm : UserControl
     {
-        public MainWindow MainWindow { get; set; }
+        public MainWindow ParentWindow { get; set; }
 
         private FormType FormType { get; set; }
 
         public CategoryForm()
         {
             InitializeComponent();
+
+            string[] icons = Directory.GetFiles(System.IO.Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Icons"), @"*.png");
+            foreach (string icon in icons)
+            {
+                int startIndex = icon.LastIndexOf('\\') + 1;
+                SelectedIcon.Items.Add(icon.Substring(startIndex, icon.LastIndexOf('.') - startIndex));
+            }
         }
 
         private void ColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
@@ -36,19 +37,18 @@ namespace Cabinet
 
         private void SelectedIcon_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // TODO: update icon preview
-            Console.WriteLine("updating icon to " + ((ComboBoxItem) e.AddedItems[0]).Content);
+            IconPreview.Source = new BitmapImage(new Uri(System.IO.Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Icons", e.AddedItems[0] + ".png")));
         }
 
         private void CategoryName_TextChanged(object sender, TextChangedEventArgs e)
         {
-            // TODO: check if name already exists, and if updating, ignore self matches
-            if (CategoryName.Text.Contains("test"))
+            Category sameNameCategory = ParentWindow.Categories.FirstOrDefault((category) => category.Name == CategoryName.Text.Trim());
+            if (sameNameCategory != null && (FormType == FormType.CREATE || sameNameCategory.Id != ParentWindow.CurrentCategoryId))
             {
                 CategoryName.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#FF9C0404");
                 NameErrorText.Content = "Name already taken";
             }
-            else
+            else if (CategoryName.Text.Trim() != "")
             {
                 CategoryName.BorderBrush = new SolidColorBrush(Colors.White);
                 NameErrorText.Content = "";
@@ -71,7 +71,6 @@ namespace Cabinet
             IconColorPicker.SelectedColor = Colors.White;
             IconBorder.Background = new SolidColorBrush(Colors.White);
             SelectedIcon.SelectedIndex = 0;
-            // IconPreview = 
             CategoryName.Text = "";
             CategoryName.BorderBrush = new SolidColorBrush(Colors.White);
             NameErrorText.Content = "";
@@ -89,9 +88,32 @@ namespace Cabinet
 
         private void SubmitCreateCategory(object sender, MouseButtonEventArgs e)
         {
-            // TODO: update db and add category to sidebar
-            Console.WriteLine("submit");
-            CloseForm(sender, e);
+            if (CategoryName.Text.Trim() == "")
+            {
+                CategoryName.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#FF9C0404");
+                NameErrorText.Content = "Name is required";
+            }
+            else if (NameErrorText.Content.ToString().Trim() == "")
+            {
+                // TODO: display loading overlay
+                try
+                {
+                    // TODO: try insert into db
+                    string name = CategoryName.Text.Trim();
+                    string iconPath = System.IO.Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Icons", SelectedIcon.Text + ".png");
+                    Color color = ((SolidColorBrush)IconBorder.Background).Color;
+                    long id = DBManager.Instance.AddCategory(name, iconPath, color);
+
+                    ParentWindow.AddCategory(new Category(ParentWindow, id, name, iconPath, color));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("could not create category: " + ex.Message);
+                    // TODO: show error in overlay
+                }
+                CloseForm(sender, e);
+                // TODO: close loading overlay
+            }
         }
     }
 
