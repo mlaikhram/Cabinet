@@ -22,6 +22,13 @@ namespace Cabinet
         {
             get
             {
+                if (!isLoaded)
+                {
+                    // TODO: load all clipboard objects from db
+                    Console.WriteLine("initial load from DB");
+                    isLoaded = true;
+                }
+
                 return clipboardObjects.AsEnumerable();
             }
         }
@@ -29,8 +36,11 @@ namespace Cabinet
         public Border Icon { get; private set; }
         public Image IconImage { get; private set; }
 
+        private bool isLoaded;
+
         public Category(MainWindow parentWindow) : this(parentWindow, Recent.ID, Recent.NAME, Recent.ICON_PATH, Colors.AntiqueWhite)
         {
+            isLoaded = true;
         }
 
         public Category(MainWindow parentWindow, long id, string name, string iconPath, Color color)
@@ -63,6 +73,8 @@ namespace Cabinet
             Icon.MouseEnter += (sender, e) => IconImage.Margin = new Thickness(5);
             Icon.MouseLeave += (sender, e) => IconImage.Margin = new Thickness(10);
             Icon.MouseLeftButtonUp += (sender, e) => parentWindow.SetActiveCategory(Id);
+
+            isLoaded = false;
         }
 
         public void AddClipboardObject(ClipboardObject clipboardObject, bool updateDB = true)

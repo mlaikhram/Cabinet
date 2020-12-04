@@ -97,7 +97,6 @@ namespace Cabinet
                 // TODO: display loading overlay
                 try
                 {
-                    // TODO: try insert into db
                     string name = CategoryName.Text.Trim();
                     string iconPath = Paths.ICON_PATH(SelectedIcon.Text);
                     Color color = ((SolidColorBrush)IconBorder.Background).Color;

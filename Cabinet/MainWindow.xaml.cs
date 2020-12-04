@@ -31,10 +31,8 @@ namespace Cabinet
             //recentClipboardObjects = new LinkedList<ClipboardObject>();
             categories = new List<Category>();
             Category recentCategory = new Category(this);
-            AddCategory(recentCategory);
-            // TODO: loop over db entries to add categories
-            SetActiveCategory(recentCategory.Id);
-            // DBManager.Instance.AddCategory("test", "icons/default.png", Colors.Red);
+            AddCategory(recentCategory, true);
+            DBManager.Instance.GetCategories(this).ForEach((category) => AddCategory(category));
 
             AddCategoryBorder.MouseEnter += (sender, e) => ((System.Windows.Controls.Image) AddCategoryBorder.Child).Margin = new Thickness(5);
             AddCategoryBorder.MouseLeave += (sender, e) => ((System.Windows.Controls.Image) AddCategoryBorder.Child).Margin = new Thickness(10);
@@ -70,11 +68,14 @@ namespace Cabinet
             Activate();
         }
 
-        public void AddCategory(Category category)
+        public void AddCategory(Category category, bool setActive = false)
         {
             CategoryPanel.Children.Insert(CategoryPanel.Children.Count - 1, category.Icon);
             categories.Add(category);
-            SetActiveCategory(category.Id);
+            if (setActive)
+            {
+                SetActiveCategory(category.Id);
+            }
         }
 
         public void SetActiveCategory(long id)
