@@ -62,8 +62,8 @@ namespace Cabinet
             this.label = new Label
             {
                 Content = label,
-                Background = (SolidColorBrush)new BrushConverter().ConvertFrom("#FF818181"),
-                Foreground = (SolidColorBrush)new BrushConverter().ConvertFrom("#FFFFFFFF"),
+                Background = (SolidColorBrush)new BrushConverter().ConvertFrom(ColorSet.CLIPBOARD_LABEL_BG),
+                Foreground = new SolidColorBrush(Colors.White),
                 FontSize = 8,
                 HorizontalContentAlignment = HorizontalAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center,
@@ -78,7 +78,7 @@ namespace Cabinet
                 Width = 132,
                 Height = 164,
                 Margin = new Thickness(6, 0, 0, 6),
-                BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#FF666666"),
+                BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom(ColorSet.CLIPBOARD_BORDER),
                 BorderThickness = new Thickness(2),
                 Background = new SolidColorBrush(Colors.Transparent)
             };
@@ -109,7 +109,7 @@ namespace Cabinet
 
         protected virtual void OnHoverExit(object sender, RoutedEventArgs e)
         {
-            ClipboardContainer.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#FF666666");
+            ClipboardContainer.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom(ColorSet.CLIPBOARD_BORDER);
         }
 
         public abstract bool MatchesClipboard();
@@ -221,7 +221,7 @@ namespace Cabinet
                 return false;
             }
 
-            System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0, 0, b1.Width, b1.Height);
+            Rectangle rect = new Rectangle(0, 0, b1.Width, b1.Height);
             BitmapData data1
                 = b1.LockBits(rect, ImageLockMode.ReadOnly, b1.PixelFormat);
             BitmapData data2
@@ -291,7 +291,7 @@ namespace Cabinet
             {
                 Image thumbnail = new Image
                 {
-                    Source = new BitmapImage(new Uri(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "settings.png"))),
+                    Source = new BitmapImage(new Uri(Paths.LOADING)),
                     Height = 150,
                     Stretch = Stretch.Uniform,
                     HorizontalAlignment = HorizontalAlignment.Center
@@ -344,14 +344,12 @@ namespace Cabinet
             catch (UnauthorizedAccessException)
             {
                 Console.WriteLine("invalid permission on " + filepath);
-                // TODO: set to unauthorizes BitmapImage
-                return new BitmapImage(new Uri(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "settings.png")));
+                return new BitmapImage(new Uri(Paths.UNAUTHORIZED));
             }
             catch (FileNotFoundException)
             {
                 Console.WriteLine("file not found: " + filepath);
-                // TODO: set to missing file BitmapImage
-                return new BitmapImage(new Uri(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "settings.png")));
+                return new BitmapImage(new Uri(Paths.MISSING));
             }
         }
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,7 +21,7 @@ namespace Cabinet
         {
             InitializeComponent();
 
-            string[] icons = Directory.GetFiles(System.IO.Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Icons"), @"*.png");
+            string[] icons = Paths.ICONS;
             foreach (string icon in icons)
             {
                 int startIndex = icon.LastIndexOf('\\') + 1;
@@ -37,7 +36,7 @@ namespace Cabinet
 
         private void SelectedIcon_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            IconPreview.Source = new BitmapImage(new Uri(System.IO.Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Icons", e.AddedItems[0] + ".png")));
+            IconPreview.Source = new BitmapImage(new Uri(Paths.ICON_PATH(e.AddedItems[0].ToString())));
         }
 
         private void CategoryName_TextChanged(object sender, TextChangedEventArgs e)
@@ -45,7 +44,7 @@ namespace Cabinet
             Category sameNameCategory = ParentWindow.Categories.FirstOrDefault((category) => category.Name == CategoryName.Text.Trim());
             if (sameNameCategory != null && (FormType == FormType.CREATE || sameNameCategory.Id != ParentWindow.CurrentCategoryId))
             {
-                CategoryName.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#FF9C0404");
+                CategoryName.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom(ColorSet.ERROR);
                 NameErrorText.Content = "Name already taken";
             }
             else if (CategoryName.Text.Trim() != "")
@@ -90,7 +89,7 @@ namespace Cabinet
         {
             if (CategoryName.Text.Trim() == "")
             {
-                CategoryName.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#FF9C0404");
+                CategoryName.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom(ColorSet.ERROR);
                 NameErrorText.Content = "Name is required";
             }
             else if (NameErrorText.Content.ToString().Trim() == "")
@@ -100,7 +99,7 @@ namespace Cabinet
                 {
                     // TODO: try insert into db
                     string name = CategoryName.Text.Trim();
-                    string iconPath = System.IO.Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Icons", SelectedIcon.Text + ".png");
+                    string iconPath = Paths.ICON_PATH(SelectedIcon.Text);
                     Color color = ((SolidColorBrush)IconBorder.Background).Color;
                     long id = DBManager.Instance.AddCategory(name, iconPath, color);
 

@@ -29,7 +29,7 @@ namespace Cabinet
         public Border Icon { get; private set; }
         public Image IconImage { get; private set; }
 
-        public Category(MainWindow parentWindow) : this(parentWindow, -1, "Recent", "recent.png", Colors.AntiqueWhite)
+        public Category(MainWindow parentWindow) : this(parentWindow, Recent.ID, Recent.NAME, Recent.ICON_PATH, Colors.AntiqueWhite)
         {
         }
 

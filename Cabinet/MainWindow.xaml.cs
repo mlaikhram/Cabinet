@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
@@ -46,8 +45,7 @@ namespace Cabinet
             notifyIcon = new NotifyIcon();
             notifyIcon.Click += new EventHandler(NotifyIcon_Click);
             //notifyIcon.DoubleClick += new EventHandler(notifyIcon_DoubleClick);
-            string logo = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "logo.ico");
-            notifyIcon.Icon = new Icon(logo);
+            notifyIcon.Icon = new Icon(Paths.LOGO);
             notifyIcon.Visible = true;
 
             // keyboard shortcut
@@ -127,15 +125,15 @@ namespace Cabinet
                     Console.WriteLine("not a duplicate, finding format to save as");
                     if (Clipboard.ContainsText())
                     {
-                        newClipboardObject = new TextClipboardObject(this, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), Clipboard.GetText());
+                        newClipboardObject = new TextClipboardObject(this, DateTime.Now.ToString(Recent.DATE_FORMAT), Clipboard.GetText());
                     }
                     else if (Clipboard.ContainsImage())
                     {
-                        newClipboardObject = new ImageClipboardObject(this, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), Clipboard.GetImage());
+                        newClipboardObject = new ImageClipboardObject(this, DateTime.Now.ToString(Recent.DATE_FORMAT), Clipboard.GetImage());
                     }
                     else if (Clipboard.ContainsFileDropList())
                     {
-                        newClipboardObject = new FileDropListClipboardObject(this, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), Clipboard.GetFileDropList());
+                        newClipboardObject = new FileDropListClipboardObject(this, DateTime.Now.ToString(Recent.DATE_FORMAT), Clipboard.GetFileDropList());
                     }
                     if (newClipboardObject != null)
                     {
