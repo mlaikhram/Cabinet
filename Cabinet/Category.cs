@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Windows.Graphics.Printing.OptionDetails;
 using Color = System.Windows.Media.Color;
 using Image = System.Windows.Controls.Image;
 
@@ -25,7 +26,7 @@ namespace Cabinet
                 if (!isLoaded)
                 {
                     // TODO: load all clipboard objects from db
-                    Console.WriteLine("initial load from DB");
+                    Console.WriteLine("initial load from DB for " + Name);
                     isLoaded = true;
                 }
 
@@ -60,7 +61,8 @@ namespace Cabinet
                 CornerRadius = new CornerRadius(10),
                 Height = 60,
                 Width = 60,
-                Background = new SolidColorBrush(Color)
+                Background = new SolidColorBrush(Color),
+                AllowDrop = Id >= 0
             };
 
             IconImage = new Image
@@ -73,8 +75,16 @@ namespace Cabinet
             Icon.MouseEnter += (sender, e) => IconImage.Margin = new Thickness(5);
             Icon.MouseLeave += (sender, e) => IconImage.Margin = new Thickness(10);
             Icon.MouseLeftButtonUp += (sender, e) => parentWindow.SetActiveCategory(Id);
+            Icon.Drop += OpenAddClipboardObjectForm; // TODO: pull up add clipboardObject form
 
             isLoaded = false;
+        }
+
+        public void OpenAddClipboardObjectForm(object sender, DragEventArgs e)
+        {
+            DataObject draggedObject = (DataObject)e.Data;
+            ClipboardObject clipboardObject = (ClipboardObject)draggedObject.GetData("ClipboardObject");
+            Console.WriteLine("dropped " + clipboardObject.Label + " on " + Name);
         }
 
         public void AddClipboardObject(ClipboardObject clipboardObject, bool updateDB = true)

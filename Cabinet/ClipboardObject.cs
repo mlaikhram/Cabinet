@@ -3,11 +3,13 @@ using System.Collections.Specialized;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -56,6 +58,8 @@ namespace Cabinet
             }
         }
 
+        private DispatcherTimer dragAndDropTimer;
+
         protected ClipboardObject(MainWindow parentWindow, string label)
         {
             this.parentWindow = parentWindow;
@@ -82,9 +86,13 @@ namespace Cabinet
                 BorderThickness = new Thickness(2),
                 Background = new SolidColorBrush(Colors.Transparent)
             };
-            clipboardContainer.AddHandler(UIElement.MouseLeftButtonUpEvent, new RoutedEventHandler(TriggerClipboardCopy), true);
-            clipboardContainer.AddHandler(UIElement.MouseEnterEvent, new RoutedEventHandler(OnHoverEnter), true);
-            clipboardContainer.AddHandler(UIElement.MouseLeaveEvent, new RoutedEventHandler(OnHoverExit), true);
+
+            dragAndDropTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(20) };
+
+            clipboardContainer.MouseLeftButtonUp += TriggerClipboardCopy;
+            clipboardContainer.MouseEnter += OnHoverEnter;
+            clipboardContainer.MouseLeave += OnHoverExit;
+            clipboardContainer.MouseLeftButtonDown += OnMouseDrag;
         }
 
         private void AddClipboardPreviewPanelToStackPanel()
@@ -94,20 +102,38 @@ namespace Cabinet
             stackPanel.Children.Insert(0, clipboardPreviewPanel);
         }
 
-        private void TriggerClipboardCopy(object sender, RoutedEventArgs e)
+        private void TriggerClipboardCopy(object sender, EventArgs e)
         {
-            Console.WriteLine("triggering copy");
-            parentWindow.IncomingSelfCopy();
-            CopyContentToClipboard();
-            parentWindow.HideWindow();
+            if (dragAndDropTimer.IsEnabled)
+            {
+                Console.WriteLine("cancelling drag");
+                dragAndDropTimer.Stop();
+
+                Console.WriteLine("triggering copy");
+                parentWindow.IncomingSelfCopy();
+                CopyContentToClipboard();
+                parentWindow.HideWindow();
+            }
         }
 
-        protected virtual void OnHoverEnter(object sender, RoutedEventArgs e)
+        private void OnMouseDrag(object sender, MouseButtonEventArgs e)
+        {
+            // TODO: visual drag effect
+            dragAndDropTimer.Start();
+            dragAndDropTimer.Tick += (_, args) =>
+            {
+                dragAndDropTimer.Stop();
+                Console.WriteLine("dragging");
+                DragDrop.DoDragDrop((Border)sender, new DataObject("ClipboardObject", this), DragDropEffects.Move);
+            };
+        }
+
+        protected virtual void OnHoverEnter(object sender, EventArgs e)
         {
             ClipboardContainer.BorderBrush = new SolidColorBrush(Colors.White);
         }
 
-        protected virtual void OnHoverExit(object sender, RoutedEventArgs e)
+        protected virtual void OnHoverExit(object sender, EventArgs e)
         {
             ClipboardContainer.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom(ColorSet.CLIPBOARD_BORDER);
         }
