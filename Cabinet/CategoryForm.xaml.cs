@@ -77,7 +77,7 @@ namespace Cabinet
             Visibility = Visibility.Hidden;
         }
 
-        public void CreateCategoryForm()
+        public void OpenForm()
         {
             TitleLabel.Content = "Create Category";
             FormType = FormType.CREATE;

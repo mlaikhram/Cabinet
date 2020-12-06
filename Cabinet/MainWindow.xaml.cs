@@ -28,6 +28,7 @@ namespace Cabinet
         {
             InitializeComponent();
             CategoryForm.ParentWindow = this;
+            ClipboardForm.ParentWindow = this;
             //recentClipboardObjects = new LinkedList<ClipboardObject>();
             categories = new List<Category>();
             Category recentCategory = new Category(this);
@@ -114,11 +115,17 @@ namespace Cabinet
                 if (duplicateObject != null)
                 {
                     Console.WriteLine("moving duplicate clipboard to most recent");
-                    categories[0].RemoveClipboardObject(duplicateObject, false);
-                    ContentPanel.Children.Remove(duplicateObject.ClipboardContainer);
-                    duplicateObject.Label = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-                    categories[0].AddClipboardObject(duplicateObject, false);
-                    ContentPanel.Children.Insert(1, duplicateObject.ClipboardContainer);
+                    categories[0].RemoveClipboardObject(duplicateObject);
+                    if (CurrentCategoryId == categories[0].Id)
+                    {
+                        ContentPanel.Children.Remove(duplicateObject.ClipboardContainer);
+                    }
+                    duplicateObject.Name = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                    categories[0].AddClipboardObject(duplicateObject);
+                    if (CurrentCategoryId == categories[0].Id)
+                    {
+                        ContentPanel.Children.Insert(1, duplicateObject.ClipboardContainer);
+                    }
                 }
                 else
                 {
@@ -138,13 +145,14 @@ namespace Cabinet
                     }
                     if (newClipboardObject != null)
                     {
-                        categories[0].AddClipboardObject(newClipboardObject, false);
+                        categories[0].AddClipboardObject(newClipboardObject);
                         if (CurrentCategoryId == categories[0].Id)
                         {
                             ContentPanel.Children.Insert(1, newClipboardObject.ClipboardContainer);
                         }
                     }
                 }
+                SetActiveCategory(Recent.ID);
             }
             else
             {
@@ -187,7 +195,7 @@ namespace Cabinet
         private void CreateCategory(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Console.WriteLine("creatiing category form");
-            CategoryForm.CreateCategoryForm();
+            CategoryForm.OpenForm();
         }
     }
 }

@@ -83,5 +83,45 @@ namespace Cabinet
                 return connection.LastInsertRowId;
             }
         }
+
+        public List<ClipboardObject> GetClipboardObjects(MainWindow parentWindow, long categoryId)
+        {
+            List<ClipboardObject> clipboardObjects = new List<ClipboardObject>();
+            using (SQLiteConnection connection = new SQLiteConnection(CONNECTION_URI))
+            {
+                connection.Open();
+
+                SQLiteCommand cmd = new SQLiteCommand(connection)
+                {
+                    CommandText = "SELECT * FROM clips where category_id=@category_id ORDER BY id DESC"
+                };
+                cmd.Parameters.AddWithValue("@category_id", categoryId);
+                cmd.Prepare();
+
+                SQLiteDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    clipboardObjects.Add(ClipboardObjectUtils.CreateClipboardObjectByType(parentWindow, reader.GetInt64(0), reader.GetString(2), reader.GetString(3), reader.GetString(4)));
+                }
+            }
+            return clipboardObjects;
+        }
+
+        public long AddClipboardObject(long categoryId, string name, string type, string content)
+        {
+            using (SQLiteConnection connection = new SQLiteConnection(CONNECTION_URI))
+            {
+                connection.Open();
+
+                SQLiteCommand cmd = new SQLiteCommand(connection)
+                {
+                    CommandText = string.Format(@"INSERT INTO clips(category_id, name, type, content) VALUES ({0}, '{1}', '{2}', '{3}')", categoryId, name, type, content)
+                };
+                cmd.ExecuteNonQuery();
+
+                Console.WriteLine("clip added");
+                return connection.LastInsertRowId;
+            }
+        }
     }
 }

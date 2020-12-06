@@ -18,16 +18,19 @@ namespace Cabinet
         public string IconPath { get; private set; }
         public Color Color { get; private set; }
 
-        private readonly LinkedList<ClipboardObject> clipboardObjects;
+        private MainWindow parentWindow;
+
+        private LinkedList<ClipboardObject> clipboardObjects;
         public IEnumerable<ClipboardObject> ClipboardObjects
         {
             get
             {
-                if (!isLoaded)
+                if (Status == LoadStatus.UNLOADED)
                 {
-                    // TODO: load all clipboard objects from db
+                    Status = LoadStatus.LOADING;
+                    clipboardObjects = new LinkedList<ClipboardObject>(DBManager.Instance.GetClipboardObjects(parentWindow, Id));
                     Console.WriteLine("initial load from DB for " + Name);
-                    isLoaded = true;
+                    Status = LoadStatus.LOADED;
                 }
 
                 return clipboardObjects.AsEnumerable();
@@ -37,11 +40,11 @@ namespace Cabinet
         public Border Icon { get; private set; }
         public Image IconImage { get; private set; }
 
-        private bool isLoaded;
+        public LoadStatus Status { get; private set; }
 
         public Category(MainWindow parentWindow) : this(parentWindow, Recent.ID, Recent.NAME, Recent.ICON_PATH, Colors.AntiqueWhite)
         {
-            isLoaded = true;
+            Status = LoadStatus.LOADED;
         }
 
         public Category(MainWindow parentWindow, long id, string name, string iconPath, Color color)
@@ -51,6 +54,7 @@ namespace Cabinet
             IconPath = iconPath;
             Color = color;
 
+            this.parentWindow = parentWindow;
             clipboardObjects = new LinkedList<ClipboardObject>();
 
             Icon = new Border
@@ -75,28 +79,33 @@ namespace Cabinet
             Icon.MouseEnter += (sender, e) => IconImage.Margin = new Thickness(5);
             Icon.MouseLeave += (sender, e) => IconImage.Margin = new Thickness(10);
             Icon.MouseLeftButtonUp += (sender, e) => parentWindow.SetActiveCategory(Id);
-            Icon.Drop += OpenAddClipboardObjectForm; // TODO: pull up add clipboardObject form
+            Icon.Drop += OpenAddClipboardObjectForm;
 
-            isLoaded = false;
+            Status = LoadStatus.UNLOADED;
         }
 
         public void OpenAddClipboardObjectForm(object sender, DragEventArgs e)
         {
-            DataObject draggedObject = (DataObject)e.Data;
-            ClipboardObject clipboardObject = (ClipboardObject)draggedObject.GetData("ClipboardObject");
-            Console.WriteLine("dropped " + clipboardObject.Label + " on " + Name);
+            if (parentWindow.CurrentCategoryId != Id)
+            {
+                ClipboardObject clipboardObject = (ClipboardObject)e.Data.GetData("ClipboardObject");
+                Console.WriteLine("dropped " + clipboardObject.Name + " on " + Name);
+                parentWindow.ClipboardForm.OpenForm(this, clipboardObject);
+            }
+            else
+            {
+                Console.WriteLine("cannot save to active category");
+            }
         }
 
-        public void AddClipboardObject(ClipboardObject clipboardObject, bool updateDB = true)
+        public void AddClipboardObject(ClipboardObject clipboardObject)
         {
             clipboardObjects.AddFirst(clipboardObject);
-            // TODO: db update if not recents
         }
 
-        public void RemoveClipboardObject(ClipboardObject clipboardObject, bool updateDB = true)
+        public void RemoveClipboardObject(ClipboardObject clipboardObject)
         {
             clipboardObjects.Remove(clipboardObject);
-            // TODO: db update if not recents
         }
     }
 }

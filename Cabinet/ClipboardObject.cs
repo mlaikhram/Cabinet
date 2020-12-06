@@ -3,7 +3,6 @@ using System.Collections.Specialized;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,9 +22,13 @@ namespace Cabinet
 {
     public abstract class ClipboardObject
     {
+        private static long NEXT_RECENT_ID = 0;
+
+        public long Id { get; private set; }
+
         private MainWindow parentWindow;
         private Label label;
-        public string Label
+        public string Name
         {
             get
             {
@@ -37,7 +40,7 @@ namespace Cabinet
             }
         }
 
-        private StackPanel stackPanel;
+        private StackPanel StackPanel { get; set; }
         private Border clipboardContainer;
         public Border ClipboardContainer {
             get
@@ -47,7 +50,7 @@ namespace Cabinet
                     Dispatcher.CurrentDispatcher.BeginInvoke((Action)(() =>
                     {
                         AddClipboardPreviewPanelToStackPanel();
-                        clipboardContainer.Child = stackPanel;
+                        clipboardContainer.Child = StackPanel;
                     }));
                 }
                 return clipboardContainer;
@@ -60,8 +63,13 @@ namespace Cabinet
 
         private DispatcherTimer dragAndDropTimer;
 
-        protected ClipboardObject(MainWindow parentWindow, string label)
+        protected ClipboardObject(MainWindow parentWindow, string label) : this(parentWindow, NEXT_RECENT_ID++, label)
         {
+        }
+
+        protected ClipboardObject(MainWindow parentWindow, long id, string label)
+        {
+            Id = id;
             this.parentWindow = parentWindow;
             this.label = new Label
             {
@@ -74,8 +82,8 @@ namespace Cabinet
                 Padding = new Thickness(0)
             };
 
-            stackPanel = new StackPanel();
-            stackPanel.Children.Add(this.label);
+            StackPanel = new StackPanel();
+            StackPanel.Children.Add(this.label);
 
             clipboardContainer = new Border
             {
@@ -99,7 +107,7 @@ namespace Cabinet
         {
             FrameworkElement clipboardPreviewPanel = GenerateClipboardPreviewPanel();
             clipboardPreviewPanel.Height = 150;
-            stackPanel.Children.Insert(0, clipboardPreviewPanel);
+            StackPanel.Children.Insert(0, clipboardPreviewPanel);
         }
 
         private void TriggerClipboardCopy(object sender, EventArgs e)
@@ -140,7 +148,8 @@ namespace Cabinet
 
         public abstract bool MatchesClipboard();
         protected abstract void CopyContentToClipboard();
-        protected abstract FrameworkElement GenerateClipboardPreviewPanel();
+        public abstract FrameworkElement GenerateClipboardPreviewPanel();
+        public abstract string GenerateContentString();
     }
 
     public class TextClipboardObject : ClipboardObject
@@ -151,6 +160,12 @@ namespace Cabinet
             : base(parentWindow, label)
         {
             this.text = text;
+        }
+
+        public TextClipboardObject(MainWindow parentWindow, long id, string name, string content)
+            : base(parentWindow, id, name)
+        {
+            text = content;
         }
 
         public override bool MatchesClipboard()
@@ -164,7 +179,7 @@ namespace Cabinet
             Clipboard.SetText(text);
         }
 
-        protected override FrameworkElement GenerateClipboardPreviewPanel()
+        public override FrameworkElement GenerateClipboardPreviewPanel()
         {
             TextBlock preview = new TextBlock
             {
@@ -181,16 +196,30 @@ namespace Cabinet
 
             return preview;
         }
+
+        public override string GenerateContentString()
+        {
+            return text;
+        }
     }
 
     public class ImageClipboardObject : ClipboardObject
     {
+        protected string localPath;
         protected System.Drawing.Image image;
 
         public ImageClipboardObject(MainWindow parentWindow, string label, System.Drawing.Image image)
             : base(parentWindow, label)
         {
+            localPath = "";
             this.image = image;
+        }
+
+        public ImageClipboardObject(MainWindow parentWindow, long id, string name, string content)
+            : base(parentWindow, id, name)
+        {
+            localPath = content;
+            image = System.Drawing.Image.FromFile(content);
         }
 
         public override bool MatchesClipboard()
@@ -203,7 +232,7 @@ namespace Cabinet
             Clipboard.SetImage(image);
         }
 
-        protected override FrameworkElement GenerateClipboardPreviewPanel()
+        public override FrameworkElement GenerateClipboardPreviewPanel()
         {
             return new Image
             {
@@ -272,6 +301,16 @@ namespace Cabinet
 
             return result;
         }
+
+        public override string GenerateContentString()
+        {
+            if (localPath == "")
+            {
+                localPath = Paths.LOCAL_IMAGE_CLIP_PATH(Guid.NewGuid().ToString());
+                image.Save(localPath, image.RawFormat);
+            }
+            return localPath;
+        }
     }
 
     public class FileDropListClipboardObject : ClipboardObject
@@ -282,6 +321,13 @@ namespace Cabinet
             : base(parentWindow, label)
         {
             this.fileDropList = fileDropList;
+        }
+
+        public FileDropListClipboardObject(MainWindow parentWindow, long id, string name, string content)
+            : base(parentWindow, id, name)
+        {
+            fileDropList = new StringCollection();
+            fileDropList.AddRange(content.Split(';'));
         }
 
         public override bool MatchesClipboard()
@@ -309,7 +355,7 @@ namespace Cabinet
             Clipboard.SetFileDropList(fileDropList);
         }
 
-        protected override FrameworkElement GenerateClipboardPreviewPanel()
+        public override FrameworkElement GenerateClipboardPreviewPanel()
         {
             UniformGrid preview = new UniformGrid();
 
@@ -377,6 +423,13 @@ namespace Cabinet
                 Console.WriteLine("file not found: " + filepath);
                 return new BitmapImage(new Uri(Paths.MISSING));
             }
+        }
+
+        public override string GenerateContentString()
+        {
+            string[] strArr = new string[fileDropList.Count];
+            fileDropList.CopyTo(strArr, 0);
+            return string.Join(";", strArr);
         }
     }
 }
