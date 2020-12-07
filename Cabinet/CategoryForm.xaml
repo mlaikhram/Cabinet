@@ -66,7 +66,7 @@
             </StackPanel>
             <Label x:Name="NameErrorText" Content="" Foreground="#FF9C0404" FontSize="10" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Padding="10,0,0,0" Width="120"/>
             <StackPanel Orientation="Horizontal" Margin="0,78,10,0" HorizontalAlignment="Right">
-                <Border Margin="0,0,10,0" Padding="5,0,5,0" BorderBrush="White" BorderThickness="1" CornerRadius="5" Background="#FF199C04" Width="60" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" MouseLeftButtonUp="SubmitCreateCategory">
+                <Border Margin="0,0,10,0" Padding="5,0,5,0" BorderBrush="White" BorderThickness="1" CornerRadius="5" Background="#FF199C04" Width="60" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" MouseLeftButtonUp="SubmitCategoryForm">
                     <Label Content="Save"  FontSize="18" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White"/>
                 </Border>
                 <Border Padding="5,0,5,0" BorderBrush="White" BorderThickness="1" CornerRadius="5" Background="#FF9C0404" Width="75" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" MouseLeftButtonUp="CloseForm">

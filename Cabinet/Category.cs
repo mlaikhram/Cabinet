@@ -75,6 +75,22 @@ namespace Cabinet
                 Source = new BitmapImage(new Uri(IconPath, UriKind.RelativeOrAbsolute))
             };
 
+            MenuItem updateItem = new MenuItem
+            {
+                Header = "Edit"
+            };
+            updateItem.Click += (sender, e) => parentWindow.CategoryForm.OpenUpdateForm(this);
+
+            MenuItem deleteItem = new MenuItem
+            {
+                Header = "Delete"
+            };
+            // TODO: attach click handler
+
+            Icon.ContextMenu = new ContextMenu();
+            Icon.ContextMenu.Items.Add(updateItem);
+            Icon.ContextMenu.Items.Add(deleteItem);
+
             Icon.Child = IconImage;
             Icon.MouseEnter += (sender, e) => IconImage.Margin = new Thickness(5);
             Icon.MouseLeave += (sender, e) => IconImage.Margin = new Thickness(10);
@@ -82,6 +98,17 @@ namespace Cabinet
             Icon.Drop += OpenAddClipboardObjectForm;
 
             Status = LoadStatus.UNLOADED;
+        }
+
+        public void UpdateCategory(string name, string iconPath, Color color)
+        {
+            Name = name;
+
+            IconPath = iconPath;
+            IconImage.Source = new BitmapImage(new Uri(IconPath, UriKind.RelativeOrAbsolute));
+
+            Color = color;
+            Icon.Background = new SolidColorBrush(Color);
         }
 
         public void OpenAddClipboardObjectForm(object sender, DragEventArgs e)

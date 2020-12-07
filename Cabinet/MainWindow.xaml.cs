@@ -168,7 +168,6 @@ namespace Cabinet
 
         public void HideWindow()
         {
-            Console.WriteLine("deactivated");
             Hide();
             WindowState = WindowState.Minimized;
         }
@@ -195,7 +194,7 @@ namespace Cabinet
         private void CreateCategory(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Console.WriteLine("creatiing category form");
-            CategoryForm.OpenForm();
+            CategoryForm.OpenCreateForm();
         }
     }
 }

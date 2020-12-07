@@ -42,7 +42,7 @@ namespace Cabinet
                 cmd.CommandText = "SELECT SQLITE_VERSION();";
                 Console.WriteLine(cmd.ExecuteScalar().ToString());
 
-                Console.WriteLine("created db");
+                Console.WriteLine("loaded db");
             }
         }
 
@@ -81,6 +81,26 @@ namespace Cabinet
 
                 Console.WriteLine("category added");
                 return connection.LastInsertRowId;
+            }
+        }
+
+        public void UpdateCategory(long id, string name, string icon, Color color)
+        {
+            using (SQLiteConnection connection = new SQLiteConnection(CONNECTION_URI))
+            {
+                connection.Open();
+
+                SQLiteCommand cmd = new SQLiteCommand(connection)
+                {
+                    CommandText = string.Format(@"UPDATE categories SET name=@name, iconPath=@iconPath, color=@color WHERE id=@id")
+                };
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@iconPath", icon);
+                cmd.Parameters.AddWithValue("@color", color.ToString());
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
+
+                Console.WriteLine("category updated");
             }
         }
 

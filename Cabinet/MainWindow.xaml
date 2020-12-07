@@ -29,7 +29,10 @@
             </ScrollViewer>
             <ScrollViewer x:Name="ContentScrollViewer" Background="#FF212121" Width="420" Height="500" VerticalScrollBarVisibility="Hidden">
                 <WrapPanel x:Name="ContentPanel" VerticalAlignment="Top" Background="#FF212121" UseLayoutRounding="True" MinHeight="500">
-                    <Label x:Name="CurrentCategory" Content="Recent" Width="420" Margin="0,0,0,6" Background="#FF2B2B2B" Foreground="#FFFFFFFF" FontSize="8" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0" />
+                    <StackPanel Width="420" Margin="0,0,0,6" Background="#FF2B2B2B" FlowDirection="LeftToRight" Height="32">
+                        <Label x:Name="CurrentCategory" Height="32" Content="Recent" Foreground="#FFFFFFFF" FontSize="16" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0" />
+                        
+                    </StackPanel>
                     <Border Width="132" Height="164" Margin="6,0,0,6" BorderBrush="#FF666666" BorderThickness="2">
                         <StackPanel>
                             <TextBlock Height="150" />

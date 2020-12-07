@@ -103,7 +103,6 @@ namespace Cabinet
                 }
                 else if (category.Status == LoadStatus.LOADED)
                 {
-                    Console.WriteLine("Checking for existing clip");
                     if (category.ClipboardObjects.Any((clipboard) => clipboard.Name == ClipboardObjectName.Text.Trim()))
                     {
                         ClipboardObjectName.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom(ColorSet.ERROR);

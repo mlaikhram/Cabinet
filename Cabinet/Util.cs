@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Windows.Forms.VisualStyles;
-using System.Windows.Media.Imaging;
+﻿using System.IO;
+
 
 namespace Cabinet
 {
     public static class Paths
     {
         public static string LOGO => Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "logo.ico");
-        public static string LOADING => Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "settings.png"); // TODO: switch to actual loading image
-        public static string MISSING => Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "settings.png"); // TODO: switch to actual missing image
-        public static string UNAUTHORIZED => Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "settings.png"); // TODO: switch to actual unauthorized image
+        public static string LOADING => "settings.png"; // TODO: switch to actual loading image
+        public static string MISSING => "settings.png"; // TODO: switch to actual missing image
+        public static string UNAUTHORIZED => "settings.png"; // TODO: switch to actual unauthorized image
         public static string[] ICONS => Directory.GetFiles(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Icons"), @"*.png");
         public static string ICON_PATH(string name) => Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Icons", name + ".png");
         public static string LOCAL_IMAGE_CLIP_PATH(string name) => Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Clips", name); // TODO: create method to optimize folder by merging duplicate files
