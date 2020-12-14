@@ -22,6 +22,7 @@ namespace Cabinet
 {
     public abstract class ClipboardObject
     {
+        private static bool IS_DRAGGING = false;
         private static long NEXT_RECENT_ID = 0;
 
         public long Id { get; private set; }
@@ -61,8 +62,6 @@ namespace Cabinet
             }
         }
 
-        private DispatcherTimer dragAndDropTimer;
-
         protected ClipboardObject(MainWindow parentWindow, string label) : this(parentWindow, NEXT_RECENT_ID++, label)
         {
         }
@@ -95,12 +94,10 @@ namespace Cabinet
                 Background = new SolidColorBrush(Colors.Transparent)
             };
 
-            dragAndDropTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(20) };
-
             clipboardContainer.MouseLeftButtonUp += TriggerClipboardCopy;
             clipboardContainer.MouseEnter += OnHoverEnter;
             clipboardContainer.MouseLeave += OnHoverExit;
-            clipboardContainer.MouseLeftButtonDown += OnMouseDrag;
+            clipboardContainer.MouseMove += OnMouseDrag;
         }
 
         private void AddClipboardPreviewPanelToStackPanel()
@@ -112,11 +109,8 @@ namespace Cabinet
 
         private void TriggerClipboardCopy(object sender, EventArgs e)
         {
-            if (dragAndDropTimer.IsEnabled)
+            if (!IS_DRAGGING)
             {
-                Console.WriteLine("cancelling drag");
-                dragAndDropTimer.Stop();
-
                 Console.WriteLine("triggering copy");
                 parentWindow.IncomingSelfCopy();
                 CopyContentToClipboard();
@@ -124,16 +118,19 @@ namespace Cabinet
             }
         }
 
-        private void OnMouseDrag(object sender, MouseButtonEventArgs e)
+        private void OnMouseDrag(object sender, MouseEventArgs e)
         {
-            // TODO: visual drag effect
-            dragAndDropTimer.Start();
-            dragAndDropTimer.Tick += (_, args) =>
+            if (e.LeftButton == MouseButtonState.Pressed && !IS_DRAGGING)
             {
-                dragAndDropTimer.Stop();
+                IS_DRAGGING = true;
                 Console.WriteLine("dragging");
-                DragDrop.DoDragDrop((Border)sender, new DataObject("ClipboardObject", this), DragDropEffects.Move);
-            };
+                DataObject dataObject = GetDataObject();
+                dataObject.SetData("ClipboardObject", this);
+                DragDrop.DoDragDrop((Border)sender, dataObject, DragDropEffects.Copy);
+                Console.WriteLine("finished");
+                IS_DRAGGING = false;
+            }
+            // TODO: visual drag effect
         }
 
         protected virtual void OnHoverEnter(object sender, EventArgs e)
@@ -150,6 +147,7 @@ namespace Cabinet
         protected abstract void CopyContentToClipboard();
         public abstract FrameworkElement GenerateClipboardPreviewPanel();
         public abstract string GenerateContentString();
+        protected abstract DataObject GetDataObject();
     }
 
     public class TextClipboardObject : ClipboardObject
@@ -201,9 +199,14 @@ namespace Cabinet
         {
             return text;
         }
+
+        protected override DataObject GetDataObject()
+        {
+            return new DataObject(DataFormats.Text, text);
+        }
     }
 
-    public class ImageClipboardObject : ClipboardObject
+    public class ImageClipboardObject : ClipboardObject // TODO: format image correctly to keep transparency
     {
         protected string localPath;
         protected System.Drawing.Image image;
@@ -310,6 +313,11 @@ namespace Cabinet
                 image.Save(localPath, image.RawFormat);
             }
             return localPath;
+        }
+
+        protected override DataObject GetDataObject()
+        {
+            return new DataObject(DataFormats.Bitmap, image);
         }
     }
 
@@ -430,6 +438,13 @@ namespace Cabinet
             string[] strArr = new string[fileDropList.Count];
             fileDropList.CopyTo(strArr, 0);
             return string.Join(";", strArr);
+        }
+
+        protected override DataObject GetDataObject()
+        {
+            string[] strArr = new string[fileDropList.Count];
+            fileDropList.CopyTo(strArr, 0);
+            return new DataObject(DataFormats.FileDrop, strArr);
         }
     }
 }

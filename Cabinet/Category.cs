@@ -87,7 +87,7 @@ namespace Cabinet
             };
             // TODO: attach click handler
 
-            Icon.ContextMenu = new ContextMenu();
+            Icon.ContextMenu = new ContextMenu(); // TODO: proper styling
             Icon.ContextMenu.Items.Add(updateItem);
             Icon.ContextMenu.Items.Add(deleteItem);
 
