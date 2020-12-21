@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Linq;
 using System.Windows.Documents;
 using System.Windows.Media;
 
@@ -104,6 +105,23 @@ namespace Cabinet
             }
         }
 
+        public void DeleteCategory(long id)
+        {
+            using (SQLiteConnection connection = new SQLiteConnection(CONNECTION_URI))
+            {
+                connection.Open();
+
+                SQLiteCommand cmd = new SQLiteCommand(connection)
+                {
+                    CommandText = string.Format(@"DELETE FROM categories WHERE id=@id")
+                };
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
+
+                Console.WriteLine("category deleted");
+            }
+        }
+
         public List<ClipboardObject> GetClipboardObjects(MainWindow parentWindow, long categoryId)
         {
             List<ClipboardObject> clipboardObjects = new List<ClipboardObject>();
@@ -113,7 +131,7 @@ namespace Cabinet
 
                 SQLiteCommand cmd = new SQLiteCommand(connection)
                 {
-                    CommandText = "SELECT * FROM clips where category_id=@category_id ORDER BY name COLLATE NOCASE"
+                    CommandText = "SELECT * FROM clips WHERE category_id=@category_id ORDER BY name COLLATE NOCASE"
                 };
                 cmd.Parameters.AddWithValue("@category_id", categoryId);
                 cmd.Prepare();
@@ -159,6 +177,34 @@ namespace Cabinet
 
                 Console.WriteLine("clipboard object deleted");
             }
+        }
+
+        public IEnumerable<string> FindUnusedStorageFiles(params string[] storageFiles)
+        {
+            HashSet<string> unusedStorageFiles = new HashSet<string>();
+            using (SQLiteConnection connection = new SQLiteConnection(CONNECTION_URI))
+            {
+                connection.Open();
+
+                SQLiteCommand cmd = new SQLiteCommand(connection)
+                {
+                    CommandText = string.Format("SELECT distinct content FROM clips WHERE content IN ({0})", String.Join(",", storageFiles.Select((file, index) => "@" + index)))
+                };
+                for (int i = 0; i < storageFiles.Length; ++i)
+                {
+                    cmd.Parameters.AddWithValue("@" + i, storageFiles[i]);
+                }
+                cmd.Prepare();
+
+                SQLiteDataReader reader = cmd.ExecuteReader();
+                HashSet<string> allFiles = new HashSet<string>(storageFiles);
+                while (reader.Read())
+                {
+                    allFiles.Remove(reader.GetString(0));
+                }
+                unusedStorageFiles = allFiles;
+            }
+            return unusedStorageFiles;
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
@@ -198,20 +199,80 @@ namespace Cabinet
             CategoryForm.OpenCreateForm();
         }
 
+        public void DeleteCategory(long id)
+        {
+            Category categoryToDelete = categories.FirstOrDefault((category) => category.Id == id);
+            if (categoryToDelete != null)
+            {
+                CategoryPanel.Children.Remove(categoryToDelete.Icon);
+                categories.Remove(categoryToDelete);
+                if (CurrentCategoryId == id)
+                {
+                    SetActiveCategory(Recent.ID);
+                }
+                Dispatcher.CurrentDispatcher.BeginInvoke((Action)(() =>
+                {
+                    Console.WriteLine("deleting category internally");
+                    HashSet<string> internalContent = new HashSet<string>();
+                    foreach (ClipboardObject clipboardObject in categoryToDelete.ClipboardObjects)
+                    {
+                        if (clipboardObject.UsesInternalStorage)
+                        {
+                            internalContent.Add(clipboardObject.GenerateContentString());
+                        }
+                        DBManager.Instance.DeleteClipboardObject(clipboardObject.Id);
+                    }
+                    // TODO: check internal storage against other DB entries
+                    string[] internalContentArr = new string[internalContent.Count];
+                    internalContent.CopyTo(internalContentArr);
+                    foreach (string unusedFile in DBManager.Instance.FindUnusedStorageFiles(internalContentArr))
+                    {
+                        Console.WriteLine("removing unused file: " + unusedFile);
+                        try
+                        {
+                            File.Delete(unusedFile);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                        }
+                    }
+                    DBManager.Instance.DeleteCategory(id);
+                    Console.WriteLine("category deleted");
+                }));
+            }
+        }
+
         public void DeleteClipboardObject(long id)
         {
             Dispatcher.CurrentDispatcher.BeginInvoke((Action)(() =>
             {
-                if (CurrentCategoryId != Recent.ID)
-                {
-                    DBManager.Instance.DeleteClipboardObject(id);
-                }
                 Category currentCategory = categories.FirstOrDefault((category) => category.Id == CurrentCategoryId);
                 if (currentCategory != null)
                 {
                     ClipboardObject objectToRemove = currentCategory.ClipboardObjects.FirstOrDefault((clipboardObject) => clipboardObject.Id == id);
                     if (objectToRemove != null)
                     {
+                        if (CurrentCategoryId != Recent.ID)
+                        {
+                            DBManager.Instance.DeleteClipboardObject(id);
+                            if (objectToRemove.UsesInternalStorage)
+                            {
+                                foreach (string unusedFile in DBManager.Instance.FindUnusedStorageFiles(objectToRemove.GenerateContentString()))
+                                {
+                                    Console.WriteLine("removing unused file: " + unusedFile);
+                                    try
+                                    {
+                                        File.Delete(unusedFile);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Console.WriteLine(e);
+                                    }
+                                }
+                            }
+                            // TODO: cleanup local files if necessary
+                        }
                         ContentPanel.Children.Remove(objectToRemove.ClipboardContainer);
                         currentCategory.RemoveClipboardObject(objectToRemove);
                     }

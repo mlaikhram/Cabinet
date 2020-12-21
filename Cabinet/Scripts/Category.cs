@@ -87,7 +87,7 @@ namespace Cabinet
                 {
                     Header = "Delete"
                 };
-                // TODO: attach click handler
+                deleteItem.Click += (sender, e) => parentWindow.DeleteCategory(Id);
 
                 Icon.ContextMenu = new ContextMenu(); // TODO: proper styling
                 Icon.ContextMenu.Items.Add(updateItem);

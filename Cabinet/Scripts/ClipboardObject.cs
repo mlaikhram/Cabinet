@@ -62,6 +62,8 @@ namespace Cabinet
             }
         }
 
+        public bool UsesInternalStorage { get; protected set; }
+
         protected ClipboardObject(MainWindow parentWindow, string label) : this(parentWindow, NEXT_RECENT_ID++, label)
         {
         }
@@ -69,6 +71,7 @@ namespace Cabinet
         protected ClipboardObject(MainWindow parentWindow, long id, string label)
         {
             Id = id;
+            UsesInternalStorage = false;
             this.parentWindow = parentWindow;
             this.label = new Label
             {
@@ -96,7 +99,8 @@ namespace Cabinet
 
             MenuItem updateItem = new MenuItem
             {
-                Header = "Edit"
+                Header = "Edit",
+                IsEnabled = false
             };
             //updateItem.Click += (sender, e) => parentWindow.CategoryForm.OpenUpdateForm(this);
 
@@ -238,7 +242,22 @@ namespace Cabinet
             : base(parentWindow, id, name)
         {
             localPath = content;
-            image = System.Drawing.Image.FromFile(content);
+            using (Bitmap temp = new Bitmap(content))
+            {
+                image = new Bitmap(temp);
+                //image = System.Drawing.Image.FromFile(content);
+            }
+            //catch (UnauthorizedAccessException)
+            //{
+            //    Console.WriteLine("invalid permission on " + content);
+            //    image = Images.UNAUTHORIZED;
+            //}
+            //catch (FileNotFoundException)
+            //{
+            //    Console.WriteLine("file not found: " + content);
+            //    image = Images.MISSING;
+            //}
+            UsesInternalStorage = true;
         }
 
         public override bool MatchesClipboard()
@@ -326,7 +345,11 @@ namespace Cabinet
             if (localPath == "")
             {
                 localPath = Paths.LOCAL_IMAGE_CLIP_PATH(Guid.NewGuid().ToString());
+            }
+            if (!File.Exists(localPath))
+            {
                 image.Save(localPath, image.RawFormat);
+                UsesInternalStorage = true;
             }
             return localPath;
         }
