@@ -158,6 +158,15 @@
   <ItemGroup>
     <Resource Include="plus.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="broken.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="lock.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="hourglass.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Runtime.WindowsRuntime.4.7.0\build\net461\System.Runtime.WindowsRuntime.targets" Condition="Exists('..\packages\System.Runtime.WindowsRuntime.4.7.0\build\net461\System.Runtime.WindowsRuntime.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

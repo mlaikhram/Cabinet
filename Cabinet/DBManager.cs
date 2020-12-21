@@ -113,7 +113,7 @@ namespace Cabinet
 
                 SQLiteCommand cmd = new SQLiteCommand(connection)
                 {
-                    CommandText = "SELECT * FROM clips where category_id=@category_id ORDER BY id DESC"
+                    CommandText = "SELECT * FROM clips where category_id=@category_id ORDER BY name COLLATE NOCASE"
                 };
                 cmd.Parameters.AddWithValue("@category_id", categoryId);
                 cmd.Prepare();

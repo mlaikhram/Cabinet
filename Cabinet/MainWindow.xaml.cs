@@ -180,6 +180,7 @@ namespace Cabinet
         void NotifyIcon_Click(object sender, EventArgs e)
         {
             Console.WriteLine("clicked toolbar icon");
+            OpenWindow(null);
         }
 
         private void Window_Closed(object sender, EventArgs e)

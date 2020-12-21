@@ -126,7 +126,7 @@ namespace Cabinet
                 Console.WriteLine("dragging");
                 DataObject dataObject = GetDataObject();
                 dataObject.SetData("ClipboardObject", this);
-                DragDrop.DoDragDrop((Border)sender, dataObject, DragDropEffects.Copy);
+                DragDrop.DoDragDrop((Border)sender, dataObject, DragDropEffects.Copy | DragDropEffects.Move);
                 Console.WriteLine("finished");
                 IS_DRAGGING = false;
             }

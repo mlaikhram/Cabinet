@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Windows.Graphics.Printing.OptionDetails;
 using Color = System.Windows.Media.Color;
 using Image = System.Windows.Controls.Image;
 
@@ -14,6 +13,7 @@ namespace Cabinet
     public class Category
     {
         public long Id { get; private set; }
+        public bool IsRecent => Id == Recent.ID;
         public string Name { get; private set; }
         public string IconPath { get; private set; }
         public Color Color { get; private set; }
@@ -59,14 +59,14 @@ namespace Cabinet
 
             Icon = new Border
             {
-                Margin = new Thickness(10, Id >= 0 ? 5 : 10, 10, 5),
+                Margin = new Thickness(10, !IsRecent ? 5 : 10, 10, 5),
                 BorderBrush = new SolidColorBrush(Colors.White),
                 BorderThickness = new Thickness(2),
                 CornerRadius = new CornerRadius(10),
                 Height = 60,
                 Width = 60,
                 Background = new SolidColorBrush(Color),
-                AllowDrop = Id >= 0
+                AllowDrop = !IsRecent
             };
 
             IconImage = new Image
@@ -75,21 +75,24 @@ namespace Cabinet
                 Source = new BitmapImage(new Uri(IconPath, UriKind.RelativeOrAbsolute))
             };
 
-            MenuItem updateItem = new MenuItem
+            if (!IsRecent)
             {
-                Header = "Edit"
-            };
-            updateItem.Click += (sender, e) => parentWindow.CategoryForm.OpenUpdateForm(this);
+                MenuItem updateItem = new MenuItem
+                {
+                    Header = "Edit"
+                };
+                updateItem.Click += (sender, e) => parentWindow.CategoryForm.OpenUpdateForm(this);
 
-            MenuItem deleteItem = new MenuItem
-            {
-                Header = "Delete"
-            };
-            // TODO: attach click handler
+                MenuItem deleteItem = new MenuItem
+                {
+                    Header = "Delete"
+                };
+                // TODO: attach click handler
 
-            Icon.ContextMenu = new ContextMenu(); // TODO: proper styling
-            Icon.ContextMenu.Items.Add(updateItem);
-            Icon.ContextMenu.Items.Add(deleteItem);
+                Icon.ContextMenu = new ContextMenu(); // TODO: proper styling
+                Icon.ContextMenu.Items.Add(updateItem);
+                Icon.ContextMenu.Items.Add(deleteItem);
+            }
 
             Icon.Child = IconImage;
             Icon.MouseEnter += (sender, e) => IconImage.Margin = new Thickness(5);

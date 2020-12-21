@@ -6,9 +6,9 @@ namespace Cabinet
     public static class Paths
     {
         public static string LOGO => Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "logo.ico");
-        public static string LOADING => "settings.png"; // TODO: switch to actual loading image
-        public static string MISSING => "settings.png"; // TODO: switch to actual missing image
-        public static string UNAUTHORIZED => "settings.png"; // TODO: switch to actual unauthorized image
+        public static string LOADING => "hourglass.png";
+        public static string MISSING => "broken.png";
+        public static string UNAUTHORIZED => "lock.png";
         public static string[] ICONS => Directory.GetFiles(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Icons"), @"*.png");
         public static string ICON_PATH(string name) => Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Icons", name + ".png");
         public static string LOCAL_IMAGE_CLIP_PATH(string name) => Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Clips", name); // TODO: create method to optimize folder by merging duplicate files
