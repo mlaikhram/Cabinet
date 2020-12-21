@@ -143,5 +143,22 @@ namespace Cabinet
                 return connection.LastInsertRowId;
             }
         }
+
+        public void DeleteClipboardObject(long id)
+        {
+            using (SQLiteConnection connection = new SQLiteConnection(CONNECTION_URI))
+            {
+                connection.Open();
+
+                SQLiteCommand cmd = new SQLiteCommand(connection)
+                {
+                    CommandText = string.Format(@"DELETE FROM clips WHERE id=@id")
+                };
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
+
+                Console.WriteLine("clipboard object deleted");
+            }
+        }
     }
 }

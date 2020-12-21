@@ -94,6 +94,22 @@ namespace Cabinet
                 Background = new SolidColorBrush(Colors.Transparent)
             };
 
+            MenuItem updateItem = new MenuItem
+            {
+                Header = "Edit"
+            };
+            //updateItem.Click += (sender, e) => parentWindow.CategoryForm.OpenUpdateForm(this);
+
+            MenuItem deleteItem = new MenuItem
+            {
+                Header = "Delete"
+            };
+            deleteItem.Click += (sender, e) => parentWindow.DeleteClipboardObject(Id);
+
+            clipboardContainer.ContextMenu = new ContextMenu(); // TODO: proper styling
+            clipboardContainer.ContextMenu.Items.Add(updateItem);
+            clipboardContainer.ContextMenu.Items.Add(deleteItem);
+
             clipboardContainer.MouseLeftButtonUp += TriggerClipboardCopy;
             clipboardContainer.MouseEnter += OnHoverEnter;
             clipboardContainer.MouseLeave += OnHoverExit;

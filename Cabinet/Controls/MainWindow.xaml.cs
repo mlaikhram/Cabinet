@@ -81,7 +81,7 @@ namespace Cabinet
 
         public void SetActiveCategory(long id)
         {
-            Category selectedCategory = categories.Where((category) => category.Id == id).FirstOrDefault();
+            Category selectedCategory = categories.FirstOrDefault((category) => category.Id == id);
             if (selectedCategory != null && selectedCategory.Id != CurrentCategoryId)
             {
                 CurrentCategory.Content = selectedCategory.Name;
@@ -196,6 +196,27 @@ namespace Cabinet
         {
             Console.WriteLine("creatiing category form");
             CategoryForm.OpenCreateForm();
+        }
+
+        public void DeleteClipboardObject(long id)
+        {
+            Dispatcher.CurrentDispatcher.BeginInvoke((Action)(() =>
+            {
+                if (CurrentCategoryId != Recent.ID)
+                {
+                    DBManager.Instance.DeleteClipboardObject(id);
+                }
+                Category currentCategory = categories.FirstOrDefault((category) => category.Id == CurrentCategoryId);
+                if (currentCategory != null)
+                {
+                    ClipboardObject objectToRemove = currentCategory.ClipboardObjects.FirstOrDefault((clipboardObject) => clipboardObject.Id == id);
+                    if (objectToRemove != null)
+                    {
+                        ContentPanel.Children.Remove(objectToRemove.ClipboardContainer);
+                        currentCategory.RemoveClipboardObject(objectToRemove);
+                    }
+                }
+            }));
         }
     }
 }
