@@ -16,14 +16,14 @@
     <Grid>
         <DockPanel x:Name="MainPanel" IsEnabled="True" Panel.ZIndex="0">
             <StackPanel x:Name="ToolPanel" Height="50" DockPanel.Dock="Top" Background="#FF4B4B4B" Orientation="Horizontal" UseLayoutRounding="True">
-                <Image x:Name="Settings" Width="40" Height="40" Margin="20,0" Source="settings.png"/>
-                <Image x:Name="SearchIcon" Width="30" Height="30" Margin="20,0,10,0" Source="search.png"/>
+                <Image x:Name="Settings" Width="40" Height="40" Margin="20,0" Source="/Cabinet;component/Images/settings.png"/>
+                <Image x:Name="SearchIcon" Width="30" Height="30" Margin="20,0,10,0" Source="/Cabinet;component/Images/search.png"/>
                 <TextBox x:Name="Search" TextWrapping="Wrap" Height="30" Width="350" VerticalContentAlignment="Center" FontSize="18" Margin="0" Background="#FF212121" Foreground="#FFBFBFBF" SelectionBrush="#FF616161" BorderBrush="#FFB8B8B8"/>
             </StackPanel>
             <ScrollViewer x:Name="CategoryScrollViewer" Background="#FF343434" Width="80" Height="500" VerticalScrollBarVisibility="Hidden">
                 <StackPanel x:Name="CategoryPanel" Background="#FF343434" VerticalAlignment="Top" Width="80" UseLayoutRounding="True" ScrollViewer.VerticalScrollBarVisibility="Hidden" MinHeight="500">
-                    <Border x:Name="AddCategoryBorder" Margin="10,5,10,10" BorderBrush="White" BorderThickness="2" CornerRadius="10" Height="60" Width="60" Background="AntiqueWhite" MouseLeftButtonUp="CreateCategory">
-                        <Image Source="plus.png" Margin="10"/>
+                    <Border x:Name="AddCategoryBorder" Margin="5,5,5,5" BorderBrush="White" BorderThickness="2" CornerRadius="10" Height="60" Width="60" Background="AntiqueWhite" MouseLeftButtonUp="CreateCategory">
+                        <Image Source="/Cabinet;component/Images/plus.png" Margin="10,10,10,10" Height="43" VerticalAlignment="Bottom"/>
                     </Border>
                 </StackPanel>
             </ScrollViewer>
@@ -31,7 +31,7 @@
                 <WrapPanel x:Name="ContentPanel" VerticalAlignment="Top" Background="#FF212121" UseLayoutRounding="True" MinHeight="500">
                     <StackPanel Width="420" Margin="0,0,0,6" Background="#FF2B2B2B" FlowDirection="LeftToRight" Height="32">
                         <Label x:Name="CurrentCategory" Height="32" Content="Recent" Foreground="#FFFFFFFF" FontSize="16" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0" />
-                        
+
                     </StackPanel>
                     <Border Width="132" Height="164" Margin="6,0,0,6" BorderBrush="#FF666666" BorderThickness="2">
                         <StackPanel>

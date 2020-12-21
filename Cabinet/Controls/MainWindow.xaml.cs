@@ -44,7 +44,7 @@ namespace Cabinet
             notifyIcon = new NotifyIcon();
             notifyIcon.Click += new EventHandler(NotifyIcon_Click);
             //notifyIcon.DoubleClick += new EventHandler(notifyIcon_DoubleClick);
-            notifyIcon.Icon = new Icon(Paths.LOGO);
+            notifyIcon.Icon = Images.LOGO;
             notifyIcon.Visible = true;
 
             // keyboard shortcut

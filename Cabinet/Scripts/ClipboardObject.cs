@@ -371,7 +371,7 @@ namespace Cabinet
             {
                 Image thumbnail = new Image
                 {
-                    Source = new BitmapImage(new Uri(Paths.LOADING, UriKind.RelativeOrAbsolute)),
+                    Source = Images.LOADING,
                     Height = 150,
                     Stretch = Stretch.Uniform,
                     HorizontalAlignment = HorizontalAlignment.Center
@@ -424,12 +424,12 @@ namespace Cabinet
             catch (UnauthorizedAccessException)
             {
                 Console.WriteLine("invalid permission on " + filepath);
-                return new BitmapImage(new Uri(Paths.UNAUTHORIZED, UriKind.RelativeOrAbsolute));
+                return Images.UNAUTHORIZED;
             }
             catch (FileNotFoundException)
             {
                 Console.WriteLine("file not found: " + filepath);
-                return new BitmapImage(new Uri(Paths.MISSING, UriKind.RelativeOrAbsolute));
+                return Images.MISSING;
             }
         }
 
