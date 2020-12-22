@@ -87,23 +87,8 @@ namespace Cabinet
             if (selectedCategory != null && selectedCategory.Id != CurrentCategoryId)
             {
                 CurrentCategory.Content = selectedCategory.Name;
-                ContentPanel.Children.RemoveRange(1, ContentPanel.Children.Count - 1);
                 CurrentCategoryId = selectedCategory.Id;
-
-                if (Search.Text.Trim() != null)
-                {
-                    Search_TextChanged(null, null);
-                }
-                else
-                {
-                    Dispatcher.CurrentDispatcher.BeginInvoke((Action)(() =>
-                    {
-                        foreach (ClipboardObject clipboardObject in selectedCategory.ClipboardObjects)
-                        {
-                            ContentPanel.Children.Add(clipboardObject.ClipboardContainer);
-                        }
-                    }));
-                }
+                UpdateContentPanel(selectedCategory, Search.Text);
             }
         }
 
@@ -292,20 +277,24 @@ namespace Cabinet
         public void Search_TextChanged(object sender, TextChangedEventArgs e)
         {
             Console.WriteLine("Performing Search: {0}", Search.Text);
-
-            ContentPanel.Children.RemoveRange(1, ContentPanel.Children.Count - 1);
-
             Category currentCategory = categories.Find((category) => category.Id == CurrentCategoryId);
-            foreach (var clipboardObject in currentCategory.ClipboardObjects)
+            if (currentCategory != null)
             {
-                if (clipboardObject.PerformSearch(Search.Text))
-                {
-                    Dispatcher.CurrentDispatcher.BeginInvoke((Action)(() =>
-                    {
-                        ContentPanel.Children.Add(clipboardObject.ClipboardContainer);
-                    }));
-                }
+                UpdateContentPanel(currentCategory, Search.Text);
             }
+        }
+
+        public void UpdateContentPanel(Category category, string filter)
+        {
+            Dispatcher.CurrentDispatcher.BeginInvoke((Action)(() =>
+            {
+                ContentPanel.Children.RemoveRange(1, ContentPanel.Children.Count - 1);
+                foreach (ClipboardObject clipboardObject in category.ClipboardObjects
+                .Where((clipboardObject) => filter.Trim() == "" || clipboardObject.MatchesSearch(filter.Trim().ToLower())).ToList())
+                {
+                    ContentPanel.Children.Add(clipboardObject.ClipboardContainer);
+                }
+            }));
         }
     }
 }

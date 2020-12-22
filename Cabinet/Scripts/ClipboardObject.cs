@@ -42,6 +42,7 @@ namespace Cabinet
         }
 
         private StackPanel StackPanel { get; set; }
+
         private Border clipboardContainer;
         public Border ClipboardContainer {
             get
@@ -168,7 +169,7 @@ namespace Cabinet
         public abstract FrameworkElement GenerateClipboardPreviewPanel();
         public abstract string GenerateContentString();
         protected abstract DataObject GetDataObject();
-        public abstract bool PerformSearch(string searchString);
+        public abstract bool MatchesSearch(string searchString);
     }
 
     public class TextClipboardObject : ClipboardObject
@@ -226,9 +227,9 @@ namespace Cabinet
             return new DataObject(DataFormats.Text, text);
         }
 
-        public override bool PerformSearch(string searchString)
+        public override bool MatchesSearch(string searchString)
         {
-            return Name.Contains(searchString);
+            return Name.ToLower().Contains(searchString);
         }
     }
 
@@ -365,9 +366,9 @@ namespace Cabinet
             return new DataObject(DataFormats.Bitmap, image);
         }
 
-        public override bool PerformSearch(string searchString)
+        public override bool MatchesSearch(string searchString)
         {
-            return Name.Contains(searchString);
+            return Name.ToLower().Contains(searchString);
         }
     }
 
@@ -497,9 +498,9 @@ namespace Cabinet
             return new DataObject(DataFormats.FileDrop, strArr);
         }
 
-        public override bool PerformSearch(string searchString)
+        public override bool MatchesSearch(string searchString)
         {
-            return Name.Contains(searchString);
+            return Name.ToLower().Contains(searchString);
         }
     }
 }
