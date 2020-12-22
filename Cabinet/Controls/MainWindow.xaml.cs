@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using WinApiWrappers;
@@ -61,10 +62,10 @@ namespace Cabinet
 
             // position window at cursor, but ensure full visibility
             int buffer = 10;
-            Rectangle screenBounds = Screen.FromPoint(Control.MousePosition).Bounds;
+            Rectangle screenBounds = Screen.FromPoint(System.Windows.Forms.Control.MousePosition).Bounds;
 
-            Left = Math.Min(Control.MousePosition.X + buffer, screenBounds.X + screenBounds.Width - Width - buffer);
-            Top = Math.Max(Control.MousePosition.Y - Height - buffer, screenBounds.Y + buffer);
+            Left = Math.Min(System.Windows.Forms.Control.MousePosition.X + buffer, screenBounds.X + screenBounds.Width - Width - buffer);
+            Top = Math.Max(System.Windows.Forms.Control.MousePosition.Y - Height - buffer, screenBounds.Y + buffer);
 
             Show();
             Activate();
@@ -87,14 +88,22 @@ namespace Cabinet
             {
                 CurrentCategory.Content = selectedCategory.Name;
                 ContentPanel.Children.RemoveRange(1, ContentPanel.Children.Count - 1);
-                Dispatcher.CurrentDispatcher.BeginInvoke((Action)(() =>
-                {
-                    foreach (ClipboardObject clipboardObject in selectedCategory.ClipboardObjects)
-                    {
-                        ContentPanel.Children.Add(clipboardObject.ClipboardContainer);
-                    }
-                }));
                 CurrentCategoryId = selectedCategory.Id;
+
+                if (Search.Text.Trim() != null)
+                {
+                    Search_TextChanged(null, null);
+                }
+                else
+                {
+                    Dispatcher.CurrentDispatcher.BeginInvoke((Action)(() =>
+                    {
+                        foreach (ClipboardObject clipboardObject in selectedCategory.ClipboardObjects)
+                        {
+                            ContentPanel.Children.Add(clipboardObject.ClipboardContainer);
+                        }
+                    }));
+                }
             }
         }
 
@@ -278,6 +287,25 @@ namespace Cabinet
                     }
                 }
             }));
+        }
+
+        public void Search_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            Console.WriteLine("Performing Search: {0}", Search.Text);
+
+            ContentPanel.Children.RemoveRange(1, ContentPanel.Children.Count - 1);
+
+            Category currentCategory = categories.Find((category) => category.Id == CurrentCategoryId);
+            foreach (var clipboardObject in currentCategory.ClipboardObjects)
+            {
+                if (clipboardObject.PerformSearch(Search.Text))
+                {
+                    Dispatcher.CurrentDispatcher.BeginInvoke((Action)(() =>
+                    {
+                        ContentPanel.Children.Add(clipboardObject.ClipboardContainer);
+                    }));
+                }
+            }
         }
     }
 }

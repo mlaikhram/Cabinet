@@ -168,6 +168,7 @@ namespace Cabinet
         public abstract FrameworkElement GenerateClipboardPreviewPanel();
         public abstract string GenerateContentString();
         protected abstract DataObject GetDataObject();
+        public abstract bool PerformSearch(string searchString);
     }
 
     public class TextClipboardObject : ClipboardObject
@@ -223,6 +224,11 @@ namespace Cabinet
         protected override DataObject GetDataObject()
         {
             return new DataObject(DataFormats.Text, text);
+        }
+
+        public override bool PerformSearch(string searchString)
+        {
+            return Name.Contains(searchString);
         }
     }
 
@@ -358,6 +364,11 @@ namespace Cabinet
         {
             return new DataObject(DataFormats.Bitmap, image);
         }
+
+        public override bool PerformSearch(string searchString)
+        {
+            return Name.Contains(searchString);
+        }
     }
 
     public class FileDropListClipboardObject : ClipboardObject
@@ -484,6 +495,11 @@ namespace Cabinet
             string[] strArr = new string[fileDropList.Count];
             fileDropList.CopyTo(strArr, 0);
             return new DataObject(DataFormats.FileDrop, strArr);
+        }
+
+        public override bool PerformSearch(string searchString)
+        {
+            return Name.Contains(searchString);
         }
     }
 }

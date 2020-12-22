@@ -18,7 +18,7 @@
             <StackPanel x:Name="ToolPanel" Height="50" DockPanel.Dock="Top" Background="#FF4B4B4B" Orientation="Horizontal" UseLayoutRounding="True">
                 <Image x:Name="Settings" Width="40" Height="40" Margin="20,0" Source="/Cabinet;component/Images/settings.png"/>
                 <Image x:Name="SearchIcon" Width="30" Height="30" Margin="20,0,10,0" Source="/Cabinet;component/Images/search.png"/>
-                <TextBox x:Name="Search" TextWrapping="Wrap" Height="30" Width="350" VerticalContentAlignment="Center" FontSize="18" Margin="0" Background="#FF212121" Foreground="#FFBFBFBF" SelectionBrush="#FF616161" BorderBrush="#FFB8B8B8"/>
+                <TextBox x:Name="Search" TextWrapping="Wrap" Height="30" Width="350" VerticalContentAlignment="Center" FontSize="18" Margin="0" Background="#FF212121" Foreground="#FFBFBFBF" SelectionBrush="#FF616161" BorderBrush="#FFB8B8B8" TextChanged="Search_TextChanged"/>
             </StackPanel>
             <ScrollViewer x:Name="CategoryScrollViewer" Background="#FF343434" Width="80" Height="500" VerticalScrollBarVisibility="Hidden">
                 <StackPanel x:Name="CategoryPanel" Background="#FF343434" VerticalAlignment="Top" Width="80" UseLayoutRounding="True" ScrollViewer.VerticalScrollBarVisibility="Hidden" MinHeight="500">
