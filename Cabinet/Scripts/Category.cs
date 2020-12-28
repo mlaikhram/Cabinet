@@ -93,6 +93,17 @@ namespace Cabinet
                 Icon.ContextMenu.Items.Add(updateItem);
                 Icon.ContextMenu.Items.Add(deleteItem);
             }
+            else
+            {
+                MenuItem clearItem = new MenuItem
+                {
+                    Header = "Clear"
+                };
+                clearItem.Click += (sender, e) => parentWindow.ClearRecents();
+
+                Icon.ContextMenu = new ContextMenu(); // TODO: proper styling
+                Icon.ContextMenu.Items.Add(clearItem);
+            }
 
             Icon.Child = IconImage;
             Icon.MouseEnter += (sender, e) => IconImage.Margin = new Thickness(5);
@@ -136,6 +147,11 @@ namespace Cabinet
         public void RemoveClipboardObject(ClipboardObject clipboardObject)
         {
             clipboardObjects.Remove(clipboardObject);
+        }
+
+        public void ClearClipboardObjects()
+        {
+            clipboardObjects.Clear();
         }
     }
 }

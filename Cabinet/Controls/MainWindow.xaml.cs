@@ -187,6 +187,18 @@ namespace Cabinet
             ClipboardEventController.Instance.UnRegisterClipboardEvent("Add to Recents");
         }
 
+        public void ClearRecents()
+        {
+            Category recents = categories.FirstOrDefault((category) => category.Id == Recent.ID);
+            if (recents != null) {
+                recents.ClearClipboardObjects();
+                if (CurrentCategoryId == Recent.ID)
+                {
+                    UpdateContentPanel(recents, Search.Text);
+                }
+            }
+        }
+
         private void CreateCategory(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Console.WriteLine("creatiing category form");
@@ -216,7 +228,6 @@ namespace Cabinet
                         }
                         DBManager.Instance.DeleteClipboardObject(clipboardObject.Id);
                     }
-                    // TODO: check internal storage against other DB entries
                     string[] internalContentArr = new string[internalContent.Count];
                     internalContent.CopyTo(internalContentArr);
                     foreach (string unusedFile in DBManager.Instance.FindUnusedStorageFiles(internalContentArr))
