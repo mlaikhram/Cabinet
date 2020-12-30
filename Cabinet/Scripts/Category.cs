@@ -77,31 +77,22 @@ namespace Cabinet
 
             if (!IsRecent)
             {
-                MenuItem updateItem = new MenuItem
-                {
-                    Header = "Edit"
-                };
+                MenuItem updateItem = ContextMenuUtils.CreateMenuItem("Edit");
                 updateItem.Click += (sender, e) => parentWindow.CategoryForm.OpenUpdateForm(this);
 
-                MenuItem deleteItem = new MenuItem
-                {
-                    Header = "Delete"
-                };
+                MenuItem deleteItem = ContextMenuUtils.CreateMenuItem("Delete");
                 deleteItem.Click += (sender, e) => parentWindow.DeleteCategory(Id);
 
-                Icon.ContextMenu = new ContextMenu(); // TODO: proper styling
+                Icon.ContextMenu = ContextMenuUtils.CreateContextMenu();
                 Icon.ContextMenu.Items.Add(updateItem);
                 Icon.ContextMenu.Items.Add(deleteItem);
             }
             else
             {
-                MenuItem clearItem = new MenuItem
-                {
-                    Header = "Clear"
-                };
+                MenuItem clearItem = ContextMenuUtils.CreateMenuItem("Clear");
                 clearItem.Click += (sender, e) => parentWindow.ClearRecents();
 
-                Icon.ContextMenu = new ContextMenu(); // TODO: proper styling
+                Icon.ContextMenu = ContextMenuUtils.CreateContextMenu();
                 Icon.ContextMenu.Items.Add(clearItem);
             }
 

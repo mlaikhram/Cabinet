@@ -1,6 +1,9 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace Cabinet
@@ -84,6 +87,29 @@ namespace Cabinet
 
                 return bitmapImage;
             }
+        }
+    }
+
+    public static class ContextMenuUtils
+    {
+        public static ContextMenu CreateContextMenu()
+        {
+            return new ContextMenu
+            {
+                Background = (SolidColorBrush)new BrushConverter().ConvertFrom("#FF121212"),
+                Margin = new Thickness(-33, 0, 0, 0),
+                BorderThickness = new Thickness(0)
+            };
+        }
+
+        public static MenuItem CreateMenuItem(string header)
+        {
+            return new MenuItem
+            {
+                Header = header,
+                Foreground = new SolidColorBrush(Colors.White),
+                Margin = new Thickness(33, 0, 0, 0)
+            };
         }
     }
 }
