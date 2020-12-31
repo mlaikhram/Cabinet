@@ -48,5 +48,8 @@
         <Grid Panel.ZIndex="2">
             <local:AddClipboardObjectForm x:Name="ClipboardForm" Visibility="Hidden" />
         </Grid>
+        <Grid Panel.ZIndex="3">
+            <local:ConfirmationForm x:Name="ConfirmationForm" Visibility="Hidden" />
+        </Grid>
     </Grid>
 </Window>

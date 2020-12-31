@@ -90,7 +90,7 @@ namespace Cabinet
         }
     }
 
-    public static class ContextMenuUtils
+    public static class ControlUtils
     {
         public static ContextMenu CreateContextMenu()
         {
@@ -109,6 +109,44 @@ namespace Cabinet
                 Header = header,
                 Foreground = new SolidColorBrush(Colors.White),
                 Margin = new Thickness(33, 0, 0, 0)
+            };
+        }
+
+        public static Border CreateCategoryIcon(string iconPath, System.Windows.Media.Color color, Thickness margin, out System.Windows.Controls.Image iconImage)
+        {
+            iconImage = new System.Windows.Controls.Image
+            {
+                Margin = new Thickness(10),
+                Source = new BitmapImage(new System.Uri(iconPath, System.UriKind.RelativeOrAbsolute))
+            };
+
+            Border icon = new Border
+            {
+                Margin = margin,
+                BorderBrush = new SolidColorBrush(Colors.White),
+                BorderThickness = new Thickness(2),
+                CornerRadius = new CornerRadius(10),
+                Height = 60,
+                Width = 60,
+                Background = new SolidColorBrush(color),
+            };
+
+            icon.Child = iconImage;
+
+            return icon;
+        }
+
+        public static TextBlock CreateConfirmationText(string text)
+        {
+            return new TextBlock
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                TextAlignment = TextAlignment.Center,
+                TextWrapping = TextWrapping.WrapWithOverflow,
+                FontSize = 18,
+                Foreground = new SolidColorBrush(Colors.White),
+                Text = text
             };
         }
     }

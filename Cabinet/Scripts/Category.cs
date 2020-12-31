@@ -57,46 +57,37 @@ namespace Cabinet
             this.parentWindow = parentWindow;
             clipboardObjects = new LinkedList<ClipboardObject>();
 
-            Icon = new Border
-            {
-                Margin = new Thickness(10, !IsRecent ? 5 : 10, 10, 5),
-                BorderBrush = new SolidColorBrush(Colors.White),
-                BorderThickness = new Thickness(2),
-                CornerRadius = new CornerRadius(10),
-                Height = 60,
-                Width = 60,
-                Background = new SolidColorBrush(Color),
-                AllowDrop = !IsRecent
-            };
-
-            IconImage = new Image
-            {
-                Margin = new Thickness(10),
-                Source = new BitmapImage(new Uri(IconPath, UriKind.RelativeOrAbsolute))
-            };
+            Image iconImage;
+            Icon = ControlUtils.CreateCategoryIcon(IconPath, Color, new Thickness(10, !IsRecent ? 5 : 10, 10, 5), out iconImage);
+            IconImage = iconImage;
+            Icon.AllowDrop = !IsRecent;
 
             if (!IsRecent)
             {
-                MenuItem updateItem = ContextMenuUtils.CreateMenuItem("Edit");
+                MenuItem updateItem = ControlUtils.CreateMenuItem("Edit");
                 updateItem.Click += (sender, e) => parentWindow.CategoryForm.OpenUpdateForm(this);
 
-                MenuItem deleteItem = ContextMenuUtils.CreateMenuItem("Delete");
-                deleteItem.Click += (sender, e) => parentWindow.DeleteCategory(Id);
+                MenuItem deleteItem = ControlUtils.CreateMenuItem("Delete");
+                deleteItem.Click += (sender, e) => parentWindow.ConfirmationForm.OpenForm(
+                    "Confirm Delete",
+                    () => parentWindow.DeleteCategory(Id),
+                    ControlUtils.CreateCategoryIcon(IconPath, Color, new Thickness(20), out _),
+                    ControlUtils.CreateConfirmationText(string.Format("Are you sure you want to delete {0}?", Name))
+                    );
 
-                Icon.ContextMenu = ContextMenuUtils.CreateContextMenu();
+                Icon.ContextMenu = ControlUtils.CreateContextMenu();
                 Icon.ContextMenu.Items.Add(updateItem);
                 Icon.ContextMenu.Items.Add(deleteItem);
             }
             else
             {
-                MenuItem clearItem = ContextMenuUtils.CreateMenuItem("Clear");
+                MenuItem clearItem = ControlUtils.CreateMenuItem("Clear");
                 clearItem.Click += (sender, e) => parentWindow.ClearRecents();
 
-                Icon.ContextMenu = ContextMenuUtils.CreateContextMenu();
+                Icon.ContextMenu = ControlUtils.CreateContextMenu();
                 Icon.ContextMenu.Items.Add(clearItem);
             }
 
-            Icon.Child = IconImage;
             Icon.MouseEnter += (sender, e) => IconImage.Margin = new Thickness(5);
             Icon.MouseLeave += (sender, e) => IconImage.Margin = new Thickness(10);
             Icon.MouseLeftButtonUp += (sender, e) => parentWindow.SetActiveCategory(Id);

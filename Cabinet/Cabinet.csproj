@@ -85,6 +85,9 @@
     <Compile Include="Controls\AddClipboardObjectForm.xaml.cs">
       <DependentUpon>AddClipboardObjectForm.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ConfirmationForm.xaml.cs">
+      <DependentUpon>ConfirmationForm.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Scripts\Util.cs" />
     <Page Include="Controls\AddClipboardObjectForm.xaml">
       <SubType>Designer</SubType>
@@ -93,6 +96,10 @@
     <Page Include="Controls\CategoryForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ConfirmationForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

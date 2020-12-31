@@ -98,14 +98,14 @@ namespace Cabinet
                 Background = new SolidColorBrush(Colors.Transparent)
             };
 
-            MenuItem updateItem = ContextMenuUtils.CreateMenuItem("Edit");
+            MenuItem updateItem = ControlUtils.CreateMenuItem("Edit");
             updateItem.IsEnabled = false;
             //updateItem.Click += (sender, e) => parentWindow.CategoryForm.OpenUpdateForm(this);
 
-            MenuItem deleteItem = ContextMenuUtils.CreateMenuItem("Delete");
+            MenuItem deleteItem = ControlUtils.CreateMenuItem("Delete");
             deleteItem.Click += (sender, e) => parentWindow.DeleteClipboardObject(Id);
 
-            clipboardContainer.ContextMenu = ContextMenuUtils.CreateContextMenu();
+            clipboardContainer.ContextMenu = ControlUtils.CreateContextMenu();
             clipboardContainer.ContextMenu.Items.Add(updateItem);
             clipboardContainer.ContextMenu.Items.Add(deleteItem);
 
