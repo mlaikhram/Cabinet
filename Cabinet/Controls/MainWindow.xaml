@@ -34,8 +34,7 @@
 
                     </StackPanel>
                     <Border Width="132" Height="164" Margin="6,0,0,6" BorderBrush="#FF666666" BorderThickness="2">
-                        <StackPanel>
-                            <TextBlock Height="150" />
+                        <StackPanel VerticalAlignment="Bottom">
                             <Label Content="label" Background="#FF818181" Foreground="#FFFFFFFF" FontSize="8" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="0"/>
                         </StackPanel>
                     </Border>

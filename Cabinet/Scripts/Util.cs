@@ -1,10 +1,12 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace Cabinet
 {
@@ -117,7 +119,7 @@ namespace Cabinet
             iconImage = new System.Windows.Controls.Image
             {
                 Margin = new Thickness(10),
-                Source = new BitmapImage(new System.Uri(iconPath, System.UriKind.RelativeOrAbsolute))
+                Source = new BitmapImage(new Uri(iconPath, UriKind.RelativeOrAbsolute))
             };
 
             Border icon = new Border
@@ -136,10 +138,54 @@ namespace Cabinet
             return icon;
         }
 
+        public delegate FrameworkElement PreviewPanelGenerator();
+        public static Border CreateClipboardObjectContainer(string name, Thickness margin, PreviewPanelGenerator previewPanelGenerator, out Label label, out StackPanel stackPanel)
+        {
+            label = new Label
+            {
+                Content = name,
+                Background = (SolidColorBrush)new BrushConverter().ConvertFrom(ColorSet.CLIPBOARD_LABEL_BG),
+                Foreground = new SolidColorBrush(Colors.White),
+                FontSize = 8,
+                HorizontalContentAlignment = HorizontalAlignment.Center,
+                VerticalContentAlignment = VerticalAlignment.Center,
+                Padding = new Thickness(0)
+            };
+
+            stackPanel = new StackPanel
+            {
+                VerticalAlignment = VerticalAlignment.Bottom
+            };
+
+            stackPanel.Children.Add(label);
+
+            Border container = new Border
+            {
+                Width = 132,
+                Height = 164,
+                Margin = margin,
+                BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom(ColorSet.CLIPBOARD_BORDER),
+                BorderThickness = new Thickness(2),
+                Background = new SolidColorBrush(Colors.Transparent)
+            };
+
+            container.Child = stackPanel;
+
+            if (previewPanelGenerator != null)
+            {
+                FrameworkElement previewPanel = previewPanelGenerator();
+                previewPanel.Height = 150;
+                stackPanel.Children.Insert(0, previewPanel);
+            }
+
+            return container;
+        }
+
         public static TextBlock CreateConfirmationText(string text)
         {
             return new TextBlock
             {
+                Margin = new Thickness(10, 0, 10, 0),
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
                 TextAlignment = TextAlignment.Center,

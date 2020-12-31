@@ -27,6 +27,7 @@ namespace Cabinet
 
         public long Id { get; private set; }
 
+        private bool LoadedPreview { get; set; }
         private MainWindow parentWindow;
         private Label label;
         public string Name
@@ -47,8 +48,9 @@ namespace Cabinet
         public Border ClipboardContainer {
             get
             {
-                if (clipboardContainer.Child == null)
+                if (!LoadedPreview)
                 {
+                    LoadedPreview = true;
                     Dispatcher.CurrentDispatcher.BeginInvoke((Action)(() =>
                     {
                         AddClipboardPreviewPanelToStackPanel();
@@ -72,38 +74,25 @@ namespace Cabinet
         protected ClipboardObject(MainWindow parentWindow, long id, string label)
         {
             Id = id;
+            LoadedPreview = false;
             UsesInternalStorage = false;
             this.parentWindow = parentWindow;
-            this.label = new Label
-            {
-                Content = label,
-                Background = (SolidColorBrush)new BrushConverter().ConvertFrom(ColorSet.CLIPBOARD_LABEL_BG),
-                Foreground = new SolidColorBrush(Colors.White),
-                FontSize = 8,
-                HorizontalContentAlignment = HorizontalAlignment.Center,
-                VerticalContentAlignment = VerticalAlignment.Center,
-                Padding = new Thickness(0)
-            };
 
-            StackPanel = new StackPanel();
-            StackPanel.Children.Add(this.label);
-
-            clipboardContainer = new Border
-            {
-                Width = 132,
-                Height = 164,
-                Margin = new Thickness(6, 0, 0, 6),
-                BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom(ColorSet.CLIPBOARD_BORDER),
-                BorderThickness = new Thickness(2),
-                Background = new SolidColorBrush(Colors.Transparent)
-            };
+            StackPanel stackPanel;
+            clipboardContainer = ControlUtils.CreateClipboardObjectContainer(label, new Thickness(6, 0, 0, 6), null, out this.label, out stackPanel);
+            StackPanel = stackPanel;
 
             MenuItem updateItem = ControlUtils.CreateMenuItem("Edit");
             updateItem.IsEnabled = false;
             //updateItem.Click += (sender, e) => parentWindow.CategoryForm.OpenUpdateForm(this);
 
             MenuItem deleteItem = ControlUtils.CreateMenuItem("Delete");
-            deleteItem.Click += (sender, e) => parentWindow.DeleteClipboardObject(Id);
+            deleteItem.Click += (sender, e) => parentWindow.ConfirmationForm.OpenForm(
+                "Confirm Delete",
+                () => parentWindow.DeleteClipboardObject(Id),
+                ControlUtils.CreateClipboardObjectContainer(Name, new Thickness(20), () => GenerateClipboardPreviewPanel(), out _, out _),
+                ControlUtils.CreateConfirmationText(string.Format("Are you sure you want to delete {0}?", Name))
+            );
 
             clipboardContainer.ContextMenu = ControlUtils.CreateContextMenu();
             clipboardContainer.ContextMenu.Items.Add(updateItem);

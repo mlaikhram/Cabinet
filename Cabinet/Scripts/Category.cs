@@ -73,7 +73,7 @@ namespace Cabinet
                     () => parentWindow.DeleteCategory(Id),
                     ControlUtils.CreateCategoryIcon(IconPath, Color, new Thickness(20), out _),
                     ControlUtils.CreateConfirmationText(string.Format("Are you sure you want to delete {0}?", Name))
-                    );
+                );
 
                 Icon.ContextMenu = ControlUtils.CreateContextMenu();
                 Icon.ContextMenu.Items.Add(updateItem);
