@@ -16,22 +16,25 @@ using System.Windows.Shapes;
 namespace Cabinet
 {
     /// <summary>
-    /// Interaction logic for AddClipboardObjectForm.xaml
+    /// Interaction logic for ClipboardObjectForm.xaml
     /// </summary>
-    public partial class AddClipboardObjectForm : UserControl
+    public partial class ClipboardObjectForm : UserControl
     {
         public MainWindow ParentWindow { get; set; }
 
+        private FormType FormType { get; set; }
         private ClipboardObject clipboardObject;
         private Category category;
 
-        public AddClipboardObjectForm()
+        public ClipboardObjectForm()
         {
             InitializeComponent();
         }
 
-        public void OpenForm(Category category, ClipboardObject clipboardObject)
+        public void OpenCreateForm(Category category, ClipboardObject clipboardObject)
         {
+            FormType = FormType.CREATE;
+
             this.category = category;
             this.clipboardObject = clipboardObject;
 
@@ -45,12 +48,28 @@ namespace Cabinet
             Visibility = Visibility.Visible;
         }
 
-        private void SubmitAddClipboardObject(object sender, MouseButtonEventArgs e)
+        public void OpenUpdateForm(Category category, ClipboardObject clipboardObject)
+        {
+            FormType = FormType.EDIT;
+
+            this.category = category;
+            this.clipboardObject = clipboardObject;
+
+            TitleLabel.Content = "Edit " + clipboardObject.Name;
+            ClipboardObjectName.Text = clipboardObject.Name;
+            ClipboardPanel.Children.Clear();
+            FrameworkElement previewPanel = clipboardObject.GenerateClipboardPreviewPanel();
+            previewPanel.Height = 150;
+            ClipboardPanel.Children.Add(previewPanel);
+
+            Visibility = Visibility.Visible;
+        }
+
+        private void SubmitClipboardObjectForm(object sender, MouseButtonEventArgs e)
         {
             if (ClipboardObjectName.Text.Trim() == "")
             {
                 ClipboardObjectName.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom(ColorSet.ERROR);
-                NameErrorText.Foreground = (SolidColorBrush)new BrushConverter().ConvertFrom(ColorSet.ERROR);
                 NameErrorText.Content = "Name is required";
             }
             else if (NameErrorText.Content.ToString().Trim() == "")
@@ -58,17 +77,25 @@ namespace Cabinet
                 // TODO: display loading overlay
                 try
                 {
-                    long categoryId = category.Id;
                     string name = ClipboardObjectName.Text.Trim();
-                    string type = clipboardObject.GetType().Name;
-                    string content = clipboardObject.GenerateContentString();
-                    long id = DBManager.Instance.AddClipboardObject(categoryId, name, type, content);
 
-                    category.AddClipboardObject(ClipboardObjectUtils.CreateClipboardObjectByType(ParentWindow, id, name, type, content));
+                    if (FormType == FormType.CREATE)
+                    {
+                        long categoryId = category.Id;
+                        string type = clipboardObject.GetType().Name;
+                        string content = clipboardObject.GenerateContentString();
+                        long id = DBManager.Instance.AddClipboardObject(categoryId, name, type, content);
+                        category.AddClipboardObject(ClipboardObjectUtils.CreateClipboardObjectByType(ParentWindow, id, name, type, content));
+                    }
+                    else if (clipboardObject != null)
+                    {
+                        DBManager.Instance.UpdateClipboardObject(clipboardObject.Id, name);
+                        clipboardObject.Name = name;
+                    }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("could not save clipboard object: " + ex.Message);
+                    Console.WriteLine("could not save/update clipboard object: " + ex.Message);
                     // TODO: show error in overlay
                 }
                 CloseForm(sender, e);
@@ -103,13 +130,14 @@ namespace Cabinet
                 }
                 else if (category.Status == LoadStatus.LOADED)
                 {
-                    if (category.ClipboardObjects.Any((clipboard) => clipboard.Name == ClipboardObjectName.Text.Trim()))
+                    ClipboardObject sameNameClipboardObject = category.ClipboardObjects.FirstOrDefault((clipboard) => clipboard.Name == ClipboardObjectName.Text.Trim());
+                    if (sameNameClipboardObject != null && (FormType == FormType.CREATE || (clipboardObject != null && sameNameClipboardObject.Id != clipboardObject.Id)))
                     {
                         ClipboardObjectName.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom(ColorSet.ERROR);
                         NameErrorText.Foreground = (SolidColorBrush)new BrushConverter().ConvertFrom(ColorSet.ERROR);
                         NameErrorText.Content = "Name already taken";
                     }
-                    else
+                    else if (ClipboardObjectName.Text.Trim() != "")
                     {
                         ClipboardObjectName.BorderBrush = new SolidColorBrush(Colors.White);
                         NameErrorText.Content = "";

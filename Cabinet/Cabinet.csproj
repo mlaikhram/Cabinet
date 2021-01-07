@@ -82,14 +82,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Controls\AddClipboardObjectForm.xaml.cs">
-      <DependentUpon>AddClipboardObjectForm.xaml</DependentUpon>
+    <Compile Include="Controls\ClipboardObjectForm.xaml.cs">
+      <DependentUpon>ClipboardObjectForm.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ConfirmationForm.xaml.cs">
       <DependentUpon>ConfirmationForm.xaml</DependentUpon>
     </Compile>
     <Compile Include="Scripts\Util.cs" />
-    <Page Include="Controls\AddClipboardObjectForm.xaml">
+    <Page Include="Controls\ClipboardObjectForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -285,6 +285,11 @@ namespace Cabinet
             }));
         }
 
+        public Category GetCurrentCategory()
+        {
+            return categories.FirstOrDefault((category) => category.Id == CurrentCategoryId);
+        }
+
         public void Search_TextChanged(object sender, TextChangedEventArgs e)
         {
             Console.WriteLine("Performing Search: {0}", Search.Text);

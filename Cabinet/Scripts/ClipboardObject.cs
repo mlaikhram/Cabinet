@@ -67,11 +67,11 @@ namespace Cabinet
 
         public bool UsesInternalStorage { get; protected set; }
 
-        protected ClipboardObject(MainWindow parentWindow, string label) : this(parentWindow, NEXT_RECENT_ID++, label)
+        protected ClipboardObject(MainWindow parentWindow, string label) : this(parentWindow, NEXT_RECENT_ID++, label, false)
         {
         }
 
-        protected ClipboardObject(MainWindow parentWindow, long id, string label)
+        protected ClipboardObject(MainWindow parentWindow, long id, string label, bool canEdit = true)
         {
             Id = id;
             LoadedPreview = false;
@@ -83,8 +83,11 @@ namespace Cabinet
             StackPanel = stackPanel;
 
             MenuItem updateItem = ControlUtils.CreateMenuItem("Edit");
-            updateItem.IsEnabled = false;
-            //updateItem.Click += (sender, e) => parentWindow.CategoryForm.OpenUpdateForm(this);
+            updateItem.IsEnabled = canEdit;
+            if (canEdit)
+            {
+                updateItem.Click += (sender, e) => parentWindow.ClipboardForm.OpenUpdateForm(parentWindow.GetCurrentCategory(), this);
+            }
 
             MenuItem deleteItem = ControlUtils.CreateMenuItem("Delete");
             deleteItem.Click += (sender, e) => parentWindow.ConfirmationForm.OpenForm(

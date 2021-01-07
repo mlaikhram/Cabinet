@@ -162,6 +162,24 @@ namespace Cabinet
             }
         }
 
+        public void UpdateClipboardObject(long id, string name)
+        {
+            using (SQLiteConnection connection = new SQLiteConnection(CONNECTION_URI))
+            {
+                connection.Open();
+
+                SQLiteCommand cmd = new SQLiteCommand(connection)
+                {
+                    CommandText = string.Format(@"UPDATE clips SET name=@name WHERE id=@id")
+                };
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
+
+                Console.WriteLine("clip updated");
+            }
+        }
+
         public void DeleteClipboardObject(long id)
         {
             using (SQLiteConnection connection = new SQLiteConnection(CONNECTION_URI))

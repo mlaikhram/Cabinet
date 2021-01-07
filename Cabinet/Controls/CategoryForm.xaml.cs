@@ -86,17 +86,19 @@ namespace Cabinet
 
         public void OpenCreateForm()
         {
-            TitleLabel.Content = "Create Category";
             FormType = FormType.CREATE;
+
+            TitleLabel.Content = "Create Category";
 
             Visibility = Visibility.Visible;
         }
 
         public void OpenUpdateForm(Category category)
         {
+            FormType = FormType.EDIT;
+
             currentCategory = category;
             TitleLabel.Content = category.Name;
-            FormType = FormType.EDIT;
 
             IconColorPicker.SelectedColor = category.Color;
             SelectedIcon.SelectedItem = iconPathToName(category.IconPath);
@@ -145,11 +147,5 @@ namespace Cabinet
                 // TODO: close loading overlay
             }
         }
-    }
-
-    internal enum FormType
-    {
-        CREATE,
-        EDIT
     }
 }

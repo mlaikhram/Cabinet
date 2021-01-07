@@ -113,7 +113,7 @@ namespace Cabinet
             {
                 ClipboardObject clipboardObject = (ClipboardObject)e.Data.GetData("ClipboardObject");
                 Console.WriteLine("dropped " + clipboardObject.Name + " on " + Name);
-                parentWindow.ClipboardForm.OpenForm(this, clipboardObject);
+                parentWindow.ClipboardForm.OpenCreateForm(this, clipboardObject);
             }
             else
             {

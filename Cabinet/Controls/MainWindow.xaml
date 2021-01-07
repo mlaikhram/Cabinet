@@ -45,7 +45,7 @@
             <local:CategoryForm x:Name="CategoryForm" Visibility="Hidden" />
         </Grid>
         <Grid Panel.ZIndex="2">
-            <local:AddClipboardObjectForm x:Name="ClipboardForm" Visibility="Hidden" />
+            <local:ClipboardObjectForm x:Name="ClipboardForm" Visibility="Hidden" />
         </Grid>
         <Grid Panel.ZIndex="3">
             <local:ConfirmationForm x:Name="ConfirmationForm" Visibility="Hidden" />

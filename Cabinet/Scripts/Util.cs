@@ -196,4 +196,10 @@ namespace Cabinet
             };
         }
     }
+
+    public enum FormType
+    {
+        CREATE,
+        EDIT
+    }
 }
