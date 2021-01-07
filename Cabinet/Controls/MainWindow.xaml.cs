@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Interop;
 using System.Windows.Threading;
 using WinApiWrappers;
 using Clipboard = System.Windows.Forms.Clipboard;
@@ -54,6 +55,12 @@ namespace Cabinet
 
             // listen for clipboard changes
             ClipboardEventController.Instance.RegisterClipboardEvent("Add to Recents", new Action(SaveClipboardToRecent));
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // prevent screen capture
+            DisplayController.Instance.DisableDisplayCapture(new WindowInteropHelper(this).Handle);
         }
 
         public void OpenWindow(HotKey k)

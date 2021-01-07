@@ -45,6 +45,7 @@
     <Compile Include="AlreadyMappedException.cs" />
     <Compile Include="ClipboardEvent.cs" />
     <Compile Include="ClipboardEventController.cs" />
+    <Compile Include="DisplayController.cs" />
     <Compile Include="HotKeyController.cs" />
     <Compile Include="HotKey.cs" />
     <Compile Include="WinApiMethods.cs" />

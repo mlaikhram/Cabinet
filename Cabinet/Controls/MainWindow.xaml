@@ -12,7 +12,7 @@
         UseLayoutRounding="True"
         Deactivated="MainWindow_Deactivated"
         Closed="Window_Closed"
-        Title="MainWindow" Height="550" Width="500">
+        Title="MainWindow" Height="550" Width="500" Loaded="Window_Loaded">
     <Grid>
         <DockPanel x:Name="MainPanel" IsEnabled="True" Panel.ZIndex="0">
             <StackPanel x:Name="ToolPanel" Height="50" DockPanel.Dock="Top" Background="#FF4B4B4B" Orientation="Horizontal" UseLayoutRounding="True">

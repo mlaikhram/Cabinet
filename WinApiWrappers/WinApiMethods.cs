@@ -20,6 +20,8 @@ namespace WinApiWrappers
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool RemoveClipboardFormatListener(IntPtr hwnd);
 
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern bool SetWindowDisplayAffinity(IntPtr hwnd, uint dwAffinity);
     }
     [Flags]
     public enum KeyModifiers : uint
