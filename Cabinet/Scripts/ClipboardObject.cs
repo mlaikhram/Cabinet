@@ -15,8 +15,11 @@ using System.Windows.Threading;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Clipboard = System.Windows.Forms.Clipboard;
+using DataObject = System.Windows.DataObject;
+using IDataObject = System.Windows.Forms.IDataObject;
 using FileAttributes = System.IO.FileAttributes;
 using Image = System.Windows.Controls.Image;
+using System.Runtime.InteropServices;
 
 namespace Cabinet
 {
@@ -219,68 +222,54 @@ namespace Cabinet
         }
     }
 
-    public class ImageClipboardObject : ClipboardObject // TODO: format image correctly to keep transparency
+    public class ImageClipboardObject : ClipboardObject
     {
         protected string localPath;
-        protected System.Drawing.Image image;
+        protected SerializableDataObject dataObject;
 
-        public ImageClipboardObject(MainWindow parentWindow, string label, System.Drawing.Image image)
+        public ImageClipboardObject(MainWindow parentWindow, string label, IDataObject dataObject)
             : base(parentWindow, label)
         {
             localPath = "";
-            this.image = image;
+            this.dataObject = new SerializableDataObject(dataObject);
         }
 
         public ImageClipboardObject(MainWindow parentWindow, long id, string name, string content)
             : base(parentWindow, id, name)
         {
             localPath = content;
-            using (Bitmap temp = new Bitmap(content))
-            {
-                image = new Bitmap(temp);
-                //image = System.Drawing.Image.FromFile(content);
-            }
-            //catch (UnauthorizedAccessException)
-            //{
-            //    Console.WriteLine("invalid permission on " + content);
-            //    image = Images.UNAUTHORIZED;
-            //}
-            //catch (FileNotFoundException)
-            //{
-            //    Console.WriteLine("file not found: " + content);
-            //    image = Images.MISSING;
-            //}
+            dataObject = SerializableDataObject.LoadFromFile(localPath);
             UsesInternalStorage = true;
         }
 
-        public override bool MatchesClipboard()
+        public override bool MatchesClipboard() // TODO: fix equality check
         {
-            return Clipboard.ContainsImage() && AreEqual(new Bitmap(Clipboard.GetImage()), new Bitmap(image));
+            return Clipboard.ContainsImage() && AreEqual(BitmapConverter.GetImageFromDataObject(new SerializableDataObject(Clipboard.GetDataObject()).GetDataObject()), BitmapConverter.GetImageFromDataObject(dataObject.GetDataObject()));
         }
 
         protected override void CopyContentToClipboard()
         {
-            Clipboard.SetImage(image);
+            Clipboard.SetDataObject(dataObject.GetDataObject());
         }
 
         public override FrameworkElement GenerateClipboardPreviewPanel()
         {
             return new Image
             {
-                Source = ImageToBitMapImage(image),
+                Source = ImageToBitMapImage(BitmapConverter.GetImageFromDataObject(dataObject.GetDataObject())),
                 Stretch = Stretch.UniformToFill,
                 HorizontalAlignment = HorizontalAlignment.Center
             };
         }
 
-        private BitmapImage ImageToBitMapImage(System.Drawing.Image image)
+        private BitmapImage ImageToBitMapImage(Bitmap image)
         {
-            using (var ms = new MemoryStream())
+            using (MemoryStream ms = new MemoryStream())
             {
                 image.Save(ms, ImageFormat.Bmp);
                 ms.Seek(0, SeekOrigin.Begin);
 
-                var bitmapImage = new BitmapImage();
+                BitmapImage bitmapImage = new BitmapImage();
                 bitmapImage.BeginInit();
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.StreamSource = ms;
@@ -341,7 +330,7 @@ namespace Cabinet
             }
             if (!File.Exists(localPath))
             {
-                image.Save(localPath, image.RawFormat);
+                dataObject.SaveToFile(localPath);
                 UsesInternalStorage = true;
             }
             return localPath;
@@ -349,7 +338,7 @@ namespace Cabinet
 
         protected override DataObject GetDataObject()
         {
-            return new DataObject(DataFormats.Bitmap, image);
+            return dataObject.GetDataObject();
         }
 
         public override bool MatchesSearch(string searchString)

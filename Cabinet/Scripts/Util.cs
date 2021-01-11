@@ -2,11 +2,22 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
+using IDataObject = System.Windows.Forms.IDataObject;
+using DataFormats = System.Windows.DataFormats;
+using ContextMenu = System.Windows.Controls.ContextMenu;
+using MenuItem = System.Windows.Controls.MenuItem;
+using Label = System.Windows.Controls.Label;
+using HorizontalAlignment = System.Windows.HorizontalAlignment;
+using DataObject = System.Windows.DataObject;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 
 namespace Cabinet
 {
@@ -71,16 +82,109 @@ namespace Cabinet
         }
     }
 
+    [Serializable]
+    public class SerializableDataObject
+    {
+        private Dictionary<string, object> dataMap;
+
+        public SerializableDataObject(IDataObject dataObject)
+        {
+            dataMap = new Dictionary<string, object>();
+            foreach (string format in dataObject.GetFormats())
+            {
+                try
+                {
+                    object data = dataObject.GetData(format);
+                    if (data != null) dataMap[format] = data;
+                }
+                catch (ExternalException ex)
+                {
+                    Console.WriteLine($"Error {ex.ErrorCode}: {ex.Message}");
+                }
+            }
+        }
+
+        public DataObject GetDataObject()
+        {
+            DataObject dataObject = new DataObject();
+            foreach (string format in dataMap.Keys)
+            {
+                try
+                {
+                    object data = dataMap[format];
+                    if (data != null) dataObject.SetData(format, data);
+                }
+                catch (ExternalException ex)
+                {
+                    Console.WriteLine($"Error {ex.ErrorCode}: {ex.Message}");
+                }
+            }
+            return dataObject;
+        }
+
+        public void SaveToFile(string filePath)
+        {
+            IFormatter formatter = new BinaryFormatter();
+            Stream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            formatter.Serialize(stream, this);
+            stream.Close();
+        }
+
+        public static SerializableDataObject LoadFromFile(string filePath)
+        {
+            IFormatter formatter = new BinaryFormatter();
+            Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            SerializableDataObject dataObject = (SerializableDataObject)formatter.Deserialize(stream);
+            stream.Close();
+            return dataObject;
+        }
+    }
+
     public static class BitmapConverter
     {
+        public static Bitmap GetImageFromDataObject(DataObject dataObject)
+        {
+            try
+            {
+                string[] formats = dataObject.GetFormats(true);
+                if (formats == null || formats.Length == 0)
+                    return null;
+
+                //if (formats.Contains("PNG")) // causes errors when trying to save from recents
+                //{
+                //    Console.WriteLine("PNG");
+
+                //    using (MemoryStream ms = (MemoryStream)dataObject.GetData("PNG"))
+                //    {
+                //        ms.Position = 0;
+                //        return new Bitmap(ms);
+                //    }
+                //}
+                if (formats.Contains("System.Drawing.Bitmap"))
+                {
+                    Console.WriteLine("System.Drawing.Bitmap");
+                    Bitmap bitmap = (Bitmap)dataObject.GetData("System.Drawing.Bitmap");
+                    return bitmap;
+                }
+                else
+                {
+                    return dataObject.GetData(DataFormats.Bitmap) as Bitmap;
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public static BitmapImage ToBitmapImage(Bitmap bitmap)
         {
-            using (var memory = new MemoryStream())
+            using (MemoryStream memory = new MemoryStream())
             {
                 bitmap.Save(memory, ImageFormat.Png);
                 memory.Position = 0;
 
-                var bitmapImage = new BitmapImage();
+                BitmapImage bitmapImage = new BitmapImage();
                 bitmapImage.BeginInit();
                 bitmapImage.StreamSource = memory;
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;

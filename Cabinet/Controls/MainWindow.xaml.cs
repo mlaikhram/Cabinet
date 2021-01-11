@@ -133,13 +133,14 @@ namespace Cabinet
                 {
                     ClipboardObject newClipboardObject = null;
                     Console.WriteLine("not a duplicate, finding format to save as");
+                    foreach (string format in Clipboard.GetDataObject().GetFormats()) Console.WriteLine(format);
                     if (Clipboard.ContainsText())
                     {
                         newClipboardObject = new TextClipboardObject(this, DateTime.Now.ToString(Recent.DATE_FORMAT), Clipboard.GetText());
                     }
                     else if (Clipboard.ContainsImage())
                     {
-                        newClipboardObject = new ImageClipboardObject(this, DateTime.Now.ToString(Recent.DATE_FORMAT), Clipboard.GetImage());
+                        newClipboardObject = new ImageClipboardObject(this, DateTime.Now.ToString(Recent.DATE_FORMAT), Clipboard.GetDataObject());
                     }
                     else if (Clipboard.ContainsFileDropList())
                     {
