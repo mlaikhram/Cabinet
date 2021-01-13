@@ -218,7 +218,7 @@ namespace Cabinet
 
         public override bool MatchesSearch(string searchString)
         {
-            return Name.ToLower().Contains(searchString);
+            return Name.ToLower().Contains(searchString) || text.ToLower().Contains(searchString);
         }
     }
 
@@ -475,7 +475,18 @@ namespace Cabinet
 
         public override bool MatchesSearch(string searchString)
         {
-            return Name.ToLower().Contains(searchString);
+            if (Name.ToLower().Contains(searchString))
+            {
+                return true;
+            }
+            foreach (string fileName in fileDropList)
+            {
+                if (fileName.ToLower().Contains(searchString))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

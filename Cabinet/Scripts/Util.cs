@@ -61,6 +61,13 @@ namespace Cabinet
         LOADED
     }
 
+    public class FormConstants
+    {
+        public static readonly int CLIP_NAME_LIMIT = 22;
+        public static readonly int CATEGORY_NAME_LIMIT = 30;
+        public static readonly int ADD_TO_CATEGORY_NAME_LIMIT = 12;
+    }
+
     public static class ClipboardObjectUtils
     {
         public static ClipboardObject CreateClipboardObjectByType(MainWindow parentWindow, long id, string name, string type, string content)

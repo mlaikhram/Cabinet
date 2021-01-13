@@ -29,6 +29,7 @@ namespace Cabinet
         public ClipboardObjectForm()
         {
             InitializeComponent();
+            ClipboardObjectName.MaxLength = FormConstants.CLIP_NAME_LIMIT;
         }
 
         public void OpenCreateForm(Category category, ClipboardObject clipboardObject)
@@ -38,7 +39,7 @@ namespace Cabinet
             this.category = category;
             this.clipboardObject = clipboardObject;
 
-            TitleLabel.Content = "Save to " + category.Name;
+            TitleLabel.Content = "Save to " + (category.Name.Length > FormConstants.ADD_TO_CATEGORY_NAME_LIMIT ? category.Name.Substring(0, FormConstants.ADD_TO_CATEGORY_NAME_LIMIT) + "..." : category.Name);
             ClipboardObjectName.Text = clipboardObject.Name;
             ClipboardPanel.Children.Clear();
             FrameworkElement previewPanel = clipboardObject.GenerateClipboardPreviewPanel();
@@ -55,7 +56,7 @@ namespace Cabinet
             this.category = category;
             this.clipboardObject = clipboardObject;
 
-            TitleLabel.Content = "Edit " + clipboardObject.Name;
+            TitleLabel.Content = "Edit Clip";
             ClipboardObjectName.Text = clipboardObject.Name;
             ClipboardPanel.Children.Clear();
             FrameworkElement previewPanel = clipboardObject.GenerateClipboardPreviewPanel();

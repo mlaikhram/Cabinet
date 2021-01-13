@@ -21,6 +21,7 @@ namespace Cabinet
         public CategoryForm()
         {
             InitializeComponent();
+            CategoryName.MaxLength = FormConstants.CATEGORY_NAME_LIMIT;
 
             string[] icons = Paths.ICONS;
             foreach (string icon in icons)
@@ -98,7 +99,7 @@ namespace Cabinet
             FormType = FormType.EDIT;
 
             currentCategory = category;
-            TitleLabel.Content = category.Name;
+            TitleLabel.Content = "Edit Category";
 
             IconColorPicker.SelectedColor = category.Color;
             SelectedIcon.SelectedItem = iconPathToName(category.IconPath);

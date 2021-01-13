@@ -17,7 +17,7 @@
                 </Border>
                 <StackPanel Orientation="Horizontal" Margin="50,10,0,0">
                     <Label Content="Name:" Foreground="#FFFFFFFF" FontSize="12" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Padding="0,0,10,0" Width="50"/>
-                    <TextBox x:Name="ClipboardObjectName" TextWrapping="Wrap" Height="25" Width="140" VerticalContentAlignment="Center" FontSize="12" Margin="0" Background="#FF151515" Foreground="White" SelectionBrush="#FF616161" BorderBrush="#FFB8B8B8" TextChanged="ClipboardObjectName_TextChanged"/>
+                    <TextBox x:Name="ClipboardObjectName" Height="25" Width="140" VerticalContentAlignment="Center" FontSize="12" Margin="0" Background="#FF151515" Foreground="White" SelectionBrush="#FF616161" BorderBrush="#FFB8B8B8" TextChanged="ClipboardObjectName_TextChanged"/>
                 </StackPanel>
                 <Label x:Name="NameErrorText" Content="" Foreground="#FF9C0404" FontSize="10" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Padding="10,0,0,0" Width="120"/>
             </StackPanel>
