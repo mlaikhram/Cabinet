@@ -326,7 +326,7 @@ namespace Cabinet
         {
             if (localPath == "")
             {
-                localPath = Paths.LOCAL_IMAGE_CLIP_PATH(Guid.NewGuid().ToString());
+                localPath = Paths.LOCAL_STORAGE_FILE_PATH(Guid.NewGuid().ToString());
             }
             if (!File.Exists(localPath))
             {

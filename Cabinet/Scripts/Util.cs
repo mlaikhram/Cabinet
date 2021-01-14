@@ -25,7 +25,8 @@ namespace Cabinet
     {
         public static string[] ICONS => Directory.GetFiles(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Icons"), @"*.png");
         public static string ICON_PATH(string name) => Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Icons", name + ".png");
-        public static string LOCAL_IMAGE_CLIP_PATH(string name) => Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Clips", name); // TODO: create Clips folder if it doesn't exist // TODO: create method to optimize folder by merging duplicate files
+        public static string LOCAL_STORAGE_DIRECTORY => Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "LocalStorage");
+        public static string LOCAL_STORAGE_FILE_PATH(string name) => Path.Combine(LOCAL_STORAGE_DIRECTORY, name); // TODO: create method to optimize folder by merging duplicate files
     }
 
     public static class Images
@@ -94,6 +95,11 @@ namespace Cabinet
     {
         private Dictionary<string, object> dataMap;
 
+        private SerializableDataObject()
+        {
+            dataMap = new Dictionary<string, object>();
+        }
+
         public SerializableDataObject(IDataObject dataObject)
         {
             dataMap = new Dictionary<string, object>();
@@ -109,6 +115,16 @@ namespace Cabinet
                     Console.WriteLine($"Error {ex.ErrorCode}: {ex.Message}");
                 }
             }
+        }
+
+        public static SerializableDataObject BrokenObject()
+        {
+            SerializableDataObject dataObject = new SerializableDataObject();
+            dataObject.dataMap[DataFormats.Bitmap] = Properties.Resources.broken;
+            dataObject.dataMap["System.Drawing.Bitmap"] = Properties.Resources.broken;
+            dataObject.dataMap["PNG"] = Properties.Resources.broken;
+            dataObject.dataMap["Format17"] = Properties.Resources.broken;
+            return dataObject;
         }
 
         public DataObject GetDataObject()
@@ -139,11 +155,19 @@ namespace Cabinet
 
         public static SerializableDataObject LoadFromFile(string filePath)
         {
-            IFormatter formatter = new BinaryFormatter();
-            Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            SerializableDataObject dataObject = (SerializableDataObject)formatter.Deserialize(stream);
-            stream.Close();
-            return dataObject;
+            try
+            {
+                IFormatter formatter = new BinaryFormatter();
+                using (Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    SerializableDataObject dataObject = (SerializableDataObject)formatter.Deserialize(stream);
+                    return dataObject;
+                }
+            }
+            catch
+            {
+                return BrokenObject();
+            }
         }
     }
 

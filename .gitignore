@@ -361,5 +361,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-# ignore local clips
-Clips/*
+# ignore local storage
+LocalStorage/*

@@ -30,6 +30,7 @@ namespace Cabinet
         public MainWindow()
         {
             InitializeComponent();
+            Directory.CreateDirectory(Paths.LOCAL_STORAGE_DIRECTORY);
             CategoryForm.ParentWindow = this;
             ClipboardForm.ParentWindow = this;
             //recentClipboardObjects = new LinkedList<ClipboardObject>();
