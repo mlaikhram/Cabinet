@@ -122,16 +122,17 @@ namespace Cabinet
             }
         }
 
-        public List<ClipboardObject> GetClipboardObjects(MainWindow parentWindow, long categoryId)
+        public SortedSet<ClipboardObject> GetClipboardObjects(MainWindow parentWindow, long categoryId)
         {
-            List<ClipboardObject> clipboardObjects = new List<ClipboardObject>();
+            SortedSet<ClipboardObject> clipboardObjects = new SortedSet<ClipboardObject>();
             using (SQLiteConnection connection = new SQLiteConnection(CONNECTION_URI))
             {
                 connection.Open();
 
                 SQLiteCommand cmd = new SQLiteCommand(connection)
                 {
-                    CommandText = "SELECT * FROM clips WHERE category_id=@category_id ORDER BY name COLLATE NOCASE"
+                    CommandText = "SELECT * FROM clips WHERE category_id=@category_id"
+                    //CommandText = "SELECT * FROM clips WHERE category_id=@category_id ORDER BY name COLLATE NOCASE"
                 };
                 cmd.Parameters.AddWithValue("@category_id", categoryId);
                 cmd.Prepare();

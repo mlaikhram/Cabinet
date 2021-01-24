@@ -91,7 +91,9 @@ namespace Cabinet
                     else if (clipboardObject != null)
                     {
                         DBManager.Instance.UpdateClipboardObject(clipboardObject.Id, name);
+                        category.RemoveClipboardObject(clipboardObject);
                         clipboardObject.Name = name;
+                        category.AddClipboardObject(clipboardObject);
                     }
                 }
                 catch (Exception ex)

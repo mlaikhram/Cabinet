@@ -20,7 +20,7 @@ namespace Cabinet
 
         private MainWindow parentWindow;
 
-        private LinkedList<ClipboardObject> clipboardObjects;
+        private SortedSet<ClipboardObject> clipboardObjects;
         public IEnumerable<ClipboardObject> ClipboardObjects
         {
             get
@@ -28,7 +28,7 @@ namespace Cabinet
                 if (Status == LoadStatus.UNLOADED)
                 {
                     Status = LoadStatus.LOADING;
-                    clipboardObjects = new LinkedList<ClipboardObject>(DBManager.Instance.GetClipboardObjects(parentWindow, Id));
+                    clipboardObjects = new SortedSet<ClipboardObject>(DBManager.Instance.GetClipboardObjects(parentWindow, Id));
                     Console.WriteLine("initial load from DB for " + Name);
                     Status = LoadStatus.LOADED;
                 }
@@ -55,8 +55,6 @@ namespace Cabinet
             Color = color;
 
             this.parentWindow = parentWindow;
-            clipboardObjects = new LinkedList<ClipboardObject>();
-
             Image iconImage;
             Icon = ControlUtils.CreateCategoryIcon(IconPath, Color, new Thickness(10, !IsRecent ? 5 : 10, 10, 5), out iconImage);
             IconImage = iconImage;
@@ -64,6 +62,7 @@ namespace Cabinet
 
             if (!IsRecent)
             {
+                clipboardObjects = new SortedSet<ClipboardObject>();
                 MenuItem updateItem = ControlUtils.CreateMenuItem("Edit");
                 updateItem.Click += (sender, e) => parentWindow.CategoryForm.OpenUpdateForm(this);
 
@@ -81,6 +80,7 @@ namespace Cabinet
             }
             else
             {
+                clipboardObjects = new SortedSet<ClipboardObject>(new Reversed());
                 MenuItem clearItem = ControlUtils.CreateMenuItem("Clear");
                 clearItem.Click += (sender, e) => parentWindow.ClearRecents();
 
@@ -123,7 +123,7 @@ namespace Cabinet
 
         public void AddClipboardObject(ClipboardObject clipboardObject)
         {
-            clipboardObjects.AddFirst(clipboardObject);
+            clipboardObjects.Add(clipboardObject);
         }
 
         public void RemoveClipboardObject(ClipboardObject clipboardObject)

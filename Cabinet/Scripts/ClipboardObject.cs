@@ -20,10 +20,12 @@ using IDataObject = System.Windows.Forms.IDataObject;
 using FileAttributes = System.IO.FileAttributes;
 using Image = System.Windows.Controls.Image;
 using System.Runtime.InteropServices;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Cabinet
 {
-    public abstract class ClipboardObject
+    public abstract class ClipboardObject : IComparable
     {
         private static bool IS_DRAGGING = false;
         private static long NEXT_RECENT_ID = 0;
@@ -159,6 +161,23 @@ namespace Cabinet
         public abstract string GenerateContentString();
         protected abstract DataObject GetDataObject();
         public abstract bool MatchesSearch(string searchString);
+
+        public int CompareTo(object obj)
+        {
+            if (obj == null)
+            {
+                return 1;
+            }
+            ClipboardObject other = obj as ClipboardObject;
+            if (other != null)
+            {
+                return Name.ToLower().CompareTo(other.Name.ToLower());
+            }
+            else
+            {
+                throw new ArgumentException("Object is not a ClipboardObject");
+            }
+        }
     }
 
     public class TextClipboardObject : ClipboardObject
@@ -487,6 +506,14 @@ namespace Cabinet
                 }
             }
             return false;
+        }
+    }
+
+    public class Reversed : IComparer<ClipboardObject>
+    {
+        public int Compare(ClipboardObject o1, ClipboardObject o2)
+        {
+            return o2.CompareTo(o1);
         }
     }
 }
