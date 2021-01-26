@@ -89,6 +89,28 @@ namespace Cabinet
             }
         }
 
+        public void MoveCategory(Category target, Category destination)
+        {
+            int targetIndex = CategoryPanel.Children.IndexOf(target.Icon);
+            int destinationIndex = CategoryPanel.Children.IndexOf(destination.Icon);
+
+            if (targetIndex != destinationIndex)
+            {
+                CategoryPanel.Children.RemoveAt(targetIndex);
+                categories.RemoveAt(targetIndex);
+                CategoryPanel.Children.Insert(destinationIndex, target.Icon);
+                categories.Insert(destinationIndex, target);
+                // TODO: db update for reorder
+                Dispatcher.CurrentDispatcher.BeginInvoke((Action)(() =>
+                {
+                    for (int i = Math.Min(targetIndex, destinationIndex); i < categories.Count; ++i)
+                    {
+                        DBManager.Instance.UpdateCategoryOrder(categories[i].Id, i);
+                    }
+                }));
+            }
+        }
+
         public void SetActiveCategory(long id)
         {
             Category selectedCategory = categories.FirstOrDefault((category) => category.Id == id);

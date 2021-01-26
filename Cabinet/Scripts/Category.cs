@@ -3,15 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Color = System.Windows.Media.Color;
+using DataObject = System.Windows.DataObject;
+using DragDropEffects = System.Windows.DragDropEffects;
+using DragEventArgs = System.Windows.DragEventArgs;
 using Image = System.Windows.Controls.Image;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 
 namespace Cabinet
 {
     public class Category
     {
+        private static bool IS_DRAGGING = false;
+
         public long Id { get; private set; }
         public bool IsRecent => Id == Recent.ID;
         public string Name { get; private set; }
@@ -77,6 +84,8 @@ namespace Cabinet
                 Icon.ContextMenu = ControlUtils.CreateContextMenu();
                 Icon.ContextMenu.Items.Add(updateItem);
                 Icon.ContextMenu.Items.Add(deleteItem);
+
+                Icon.MouseMove += OnMouseDrag;
             }
             else
             {
@@ -90,8 +99,14 @@ namespace Cabinet
 
             Icon.MouseEnter += (sender, e) => IconImage.Margin = new Thickness(5);
             Icon.MouseLeave += (sender, e) => IconImage.Margin = new Thickness(10);
-            Icon.MouseLeftButtonUp += (sender, e) => parentWindow.SetActiveCategory(Id);
-            Icon.Drop += OpenAddClipboardObjectForm;
+            Icon.MouseLeftButtonUp += (sender, e) =>
+            {
+                if (!IS_DRAGGING)
+                {
+                    parentWindow.SetActiveCategory(Id);
+                }
+            };
+            Icon.Drop += HandleDrop;
 
             Status = LoadStatus.UNLOADED;
         }
@@ -107,17 +122,41 @@ namespace Cabinet
             Icon.Background = new SolidColorBrush(Color);
         }
 
-        public void OpenAddClipboardObjectForm(object sender, DragEventArgs e)
+        private void OnMouseDrag(object sender, MouseEventArgs e)
         {
-            if (parentWindow.CurrentCategoryId != Id)
+            if (e.LeftButton == MouseButtonState.Pressed && !IS_DRAGGING)
+            {
+                IS_DRAGGING = true;
+                Icon.Visibility = Visibility.Hidden;
+                Console.WriteLine("dragging c");
+                DataObject dataObject = new DataObject();
+                dataObject.SetData("Category", this);
+                DragDrop.DoDragDrop((Border)sender, dataObject, DragDropEffects.Copy | DragDropEffects.Move);
+                Console.WriteLine("finished c");
+                IS_DRAGGING = false;
+                Icon.Visibility = Visibility.Visible;
+            }
+            // TODO: visual drag effect
+        }
+
+        public void HandleDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent("ClipboardObject") && parentWindow.CurrentCategoryId != Id)
             {
                 ClipboardObject clipboardObject = (ClipboardObject)e.Data.GetData("ClipboardObject");
                 Console.WriteLine("dropped " + clipboardObject.Name + " on " + Name);
                 parentWindow.ClipboardForm.OpenCreateForm(this, clipboardObject);
             }
+            else if (e.Data.GetDataPresent("Category"))
+            {
+                Category category = (Category)e.Data.GetData("Category");
+                Console.WriteLine("dropped " + category.Name + " on " + Name);
+                parentWindow.MoveCategory(category, this);
+
+            }
             else
             {
-                Console.WriteLine("cannot save to active category");
+                Console.WriteLine("invalid drop");
             }
         }
 

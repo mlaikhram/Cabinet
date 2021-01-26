@@ -19,8 +19,6 @@ using DataObject = System.Windows.DataObject;
 using IDataObject = System.Windows.Forms.IDataObject;
 using FileAttributes = System.IO.FileAttributes;
 using Image = System.Windows.Controls.Image;
-using System.Runtime.InteropServices;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Cabinet

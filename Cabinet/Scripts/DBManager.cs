@@ -33,7 +33,7 @@ namespace Cabinet
 
                 SQLiteCommand cmd = new SQLiteCommand(connection)
                 {
-                    CommandText = @"CREATE TABLE IF NOT EXISTS categories(id INTEGER PRIMARY KEY, name TEXT UNIQUE NOT NULL, iconPath TEXT, color TEXT NOT NULL)"
+                    CommandText = @"CREATE TABLE IF NOT EXISTS categories(id INTEGER PRIMARY KEY, name TEXT UNIQUE NOT NULL, iconPath TEXT, color TEXT NOT NULL, order_id INTEGER NOT NULL)"
                 };
                 cmd.ExecuteNonQuery();
 
@@ -56,7 +56,7 @@ namespace Cabinet
 
                 SQLiteCommand cmd = new SQLiteCommand(connection)
                 {
-                    CommandText = "SELECT * FROM categories"
+                    CommandText = "SELECT * FROM categories ORDER BY order_id"
                 };
 
                 SQLiteDataReader reader = cmd.ExecuteReader();
@@ -68,7 +68,7 @@ namespace Cabinet
             return categories;
         }
 
-        public long AddCategory(string name, string icon, Color color)
+        public long AddCategory(string name, string icon, Color color, int order)
         {
             using (SQLiteConnection connection = new SQLiteConnection(CONNECTION_URI))
             {
@@ -76,7 +76,7 @@ namespace Cabinet
 
                 SQLiteCommand cmd = new SQLiteCommand(connection)
                 {
-                    CommandText = string.Format(@"INSERT INTO categories(name, iconPath, color) VALUES ('{0}', '{1}', '{2}')", name, icon, color.ToString())
+                    CommandText = string.Format(@"INSERT INTO categories(name, iconPath, color, order_id) VALUES ('{0}', '{1}', '{2}', {3})", name, icon, color.ToString(), order)
                 };
                 cmd.ExecuteNonQuery();
 
@@ -102,6 +102,24 @@ namespace Cabinet
                 cmd.ExecuteNonQuery();
 
                 Console.WriteLine("category updated");
+            }
+        }
+
+        public void UpdateCategoryOrder(long id, int order)
+        {
+            using (SQLiteConnection connection = new SQLiteConnection(CONNECTION_URI))
+            {
+                connection.Open();
+
+                SQLiteCommand cmd = new SQLiteCommand(connection)
+                {
+                    CommandText = string.Format(@"UPDATE categories SET order_id=@order_id WHERE id=@id")
+                };
+                cmd.Parameters.AddWithValue("@order_id", order);
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
+
+                Console.WriteLine("category order updated");
             }
         }
 

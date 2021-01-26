@@ -126,7 +126,7 @@ namespace Cabinet
 
                     if (FormType == FormType.CREATE)
                     {
-                        long id = DBManager.Instance.AddCategory(name, iconPath, color);
+                        long id = DBManager.Instance.AddCategory(name, iconPath, color, ParentWindow.Categories.Count);
                         ParentWindow.AddCategory(new Category(ParentWindow, id, name, iconPath, color));
                     }
                     else if (currentCategory != null)
