@@ -21,6 +21,8 @@ namespace Cabinet
     public partial class MainWindow : Window
     {
         private NotifyIcon notifyIcon = null;
+        private System.Windows.Forms.ContextMenu contextMenu;
+        private System.Windows.Forms.MenuItem quitMenuItem;
         //private LinkedList<ClipboardObject> recentClipboardObjects;
         private readonly List<Category> categories;
         public ReadOnlyCollection<Category> Categories => categories.AsReadOnly();
@@ -50,6 +52,13 @@ namespace Cabinet
             //notifyIcon.DoubleClick += new EventHandler(notifyIcon_DoubleClick);
             notifyIcon.Icon = Images.LOGO;
             notifyIcon.Visible = true;
+            quitMenuItem = new System.Windows.Forms.MenuItem();
+            quitMenuItem.Index = 0;
+            quitMenuItem.Text = "Quit";
+            quitMenuItem.Click += new System.EventHandler(QuitMenuItem_Click);
+            contextMenu = new System.Windows.Forms.ContextMenu();
+            contextMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] { quitMenuItem });
+            notifyIcon.ContextMenu = this.contextMenu;
 
             // keyboard shortcut
             HotKeyController.Instance.RegisterHotKey("Open Cabinet", KeyModifiers.CONTROL | KeyModifiers.Alt | KeyModifiers.NOREPEAT, Keys.V, new Action<HotKey>(OpenWindow));
@@ -207,6 +216,13 @@ namespace Cabinet
         {
             Console.WriteLine("clicked toolbar icon");
             OpenWindow(null);
+        }
+
+        void QuitMenuItem_Click(object sender, EventArgs e)
+        {
+            Console.WriteLine("clicked quit in context menu");
+            //System.Windows.Forms.Application.Exit();
+            System.Environment.Exit(1);
         }
 
         private void Window_Closed(object sender, EventArgs e)
