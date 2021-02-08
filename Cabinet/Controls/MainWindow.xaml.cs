@@ -56,7 +56,7 @@ namespace Cabinet
             });
             contextMenuStrip.Items.Add("Quit", null, (sender, e) => {
                 Console.WriteLine("clicked quit in context menu");
-                System.Environment.Exit(1);
+                System.Environment.Exit(0);
             });
             notifyIcon.ContextMenuStrip = contextMenuStrip;
 
