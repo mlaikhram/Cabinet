@@ -21,8 +21,6 @@ namespace Cabinet
     public partial class MainWindow : Window
     {
         private NotifyIcon notifyIcon = null;
-        private System.Windows.Forms.ContextMenu contextMenu;
-        private System.Windows.Forms.MenuItem quitMenuItem;
         //private LinkedList<ClipboardObject> recentClipboardObjects;
         private readonly List<Category> categories;
         public ReadOnlyCollection<Category> Categories => categories.AsReadOnly();
@@ -48,17 +46,19 @@ namespace Cabinet
 
             // tray icon
             notifyIcon = new NotifyIcon();
-            notifyIcon.Click += new EventHandler(NotifyIcon_Click);
             //notifyIcon.DoubleClick += new EventHandler(notifyIcon_DoubleClick);
             notifyIcon.Icon = Images.LOGO;
             notifyIcon.Visible = true;
-            quitMenuItem = new System.Windows.Forms.MenuItem();
-            quitMenuItem.Index = 0;
-            quitMenuItem.Text = "Quit";
-            quitMenuItem.Click += new System.EventHandler(QuitMenuItem_Click);
-            contextMenu = new System.Windows.Forms.ContextMenu();
-            contextMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] { quitMenuItem });
-            notifyIcon.ContextMenu = this.contextMenu;
+            ContextMenuStrip contextMenuStrip = new ContextMenuStrip();
+            contextMenuStrip.Items.Add("Open", null, (sender, e) => {
+                Console.WriteLine("clicked open in context menu");
+                OpenWindow(null);
+            });
+            contextMenuStrip.Items.Add("Quit", null, (sender, e) => {
+                Console.WriteLine("clicked quit in context menu");
+                System.Environment.Exit(1);
+            });
+            notifyIcon.ContextMenuStrip = contextMenuStrip;
 
             // keyboard shortcut
             HotKeyController.Instance.RegisterHotKey("Open Cabinet", KeyModifiers.CONTROL | KeyModifiers.Alt | KeyModifiers.NOREPEAT, Keys.V, new Action<HotKey>(OpenWindow));
@@ -212,18 +212,11 @@ namespace Cabinet
             HideWindow();
         }
 
-        void NotifyIcon_Click(object sender, EventArgs e)
-        {
-            Console.WriteLine("clicked toolbar icon");
-            OpenWindow(null);
-        }
-
-        void QuitMenuItem_Click(object sender, EventArgs e)
-        {
-            Console.WriteLine("clicked quit in context menu");
-            //System.Windows.Forms.Application.Exit();
-            System.Environment.Exit(1);
-        }
+        //void NotifyIcon_Click(object sender, EventArgs e)
+        //{
+        //    Console.WriteLine("clicked toolbar icon");
+        //    OpenWindow(null);
+        //}
 
         private void Window_Closed(object sender, EventArgs e)
         {
