@@ -20,6 +20,8 @@ using IDataObject = System.Windows.Forms.IDataObject;
 using FileAttributes = System.IO.FileAttributes;
 using Image = System.Windows.Controls.Image;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace Cabinet
 {
@@ -261,7 +263,7 @@ namespace Cabinet
 
         public override bool MatchesClipboard() // TODO: fix equality check
         {
-            return Clipboard.ContainsImage() && AreEqual(BitmapConverter.GetImageFromDataObject(new SerializableDataObject(Clipboard.GetDataObject()).GetDataObject()), BitmapConverter.GetImageFromDataObject(dataObject.GetDataObject()));
+            return Clipboard.ContainsImage() && BitmapExtension.GetImageFromDataObject(new SerializableDataObject(Clipboard.GetDataObject()).GetDataObject()).ToBytes().SequenceEqual(BitmapExtension.GetImageFromDataObject(dataObject.GetDataObject()).ToBytes());
         }
 
         protected override void CopyContentToClipboard()
@@ -273,70 +275,10 @@ namespace Cabinet
         {
             return new Image
             {
-                Source = ImageToBitMapImage(BitmapConverter.GetImageFromDataObject(dataObject.GetDataObject())),
+                Source = BitmapExtension.ImageToBitMapImage(BitmapExtension.GetImageFromDataObject(dataObject.GetDataObject())),
                 Stretch = Stretch.UniformToFill,
                 HorizontalAlignment = HorizontalAlignment.Center
             };
-        }
-
-        private BitmapImage ImageToBitMapImage(Bitmap image)
-        {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                image.Save(ms, ImageFormat.Bmp);
-                ms.Seek(0, SeekOrigin.Begin);
-
-                BitmapImage bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = ms;
-                bitmapImage.EndInit();
-
-                return bitmapImage;
-            }
-        }
-
-        private unsafe bool AreEqual(Bitmap b1, Bitmap b2)
-        {
-            if (b1.Size != b2.Size)
-            {
-                return false;
-            }
-
-            if (b1.PixelFormat != b2.PixelFormat)
-            {
-                return false;
-            }
-
-            if (b1.PixelFormat != System.Drawing.Imaging.PixelFormat.Format32bppArgb)
-            {
-                return false;
-            }
-
-            Rectangle rect = new Rectangle(0, 0, b1.Width, b1.Height);
-            BitmapData data1
-                = b1.LockBits(rect, ImageLockMode.ReadOnly, b1.PixelFormat);
-            BitmapData data2
-                = b2.LockBits(rect, ImageLockMode.ReadOnly, b1.PixelFormat);
-
-            int* p1 = (int*)data1.Scan0;
-            int* p2 = (int*)data2.Scan0;
-            int byteCount = b1.Height * data1.Stride / 4; //only Format32bppArgb 
-
-            bool result = true;
-            for (int i = 0; i < byteCount; ++i)
-            {
-                if (*p1++ != *p2++)
-                {
-                    result = false;
-                    break;
-                }
-            }
-
-            b1.UnlockBits(data1);
-            b2.UnlockBits(data2);
-
-            return result;
         }
 
         public override string GenerateContentString()

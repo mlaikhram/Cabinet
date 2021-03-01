@@ -32,9 +32,9 @@ namespace Cabinet
     public static class Images
     {
         public static Icon LOGO => Properties.Resources.logo;
-        public static BitmapImage LOADING => BitmapConverter.ToBitmapImage(Properties.Resources.hourglass);
-        public static BitmapImage MISSING => BitmapConverter.ToBitmapImage(Properties.Resources.broken);
-        public static BitmapImage UNAUTHORIZED => BitmapConverter.ToBitmapImage(Properties.Resources._lock);
+        public static BitmapImage LOADING => BitmapExtension.ToBitmapImage(Properties.Resources.hourglass);
+        public static BitmapImage MISSING => BitmapExtension.ToBitmapImage(Properties.Resources.broken);
+        public static BitmapImage UNAUTHORIZED => BitmapExtension.ToBitmapImage(Properties.Resources._lock);
     }
 
     public static class Recent
@@ -171,8 +171,49 @@ namespace Cabinet
         }
     }
 
-    public static class BitmapConverter
+    public static class BitmapExtension
     {
+        public static byte[] ToBytes(this Bitmap bitmap)
+        {
+            BitmapImage image = ImageToBitMapImage(bitmap);
+            byte[] data = new byte[] { };
+            if (image != null)
+            {
+                try
+                {
+                    var encoder = new BmpBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create(image));
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        encoder.Save(ms);
+                        data = ms.ToArray();
+                    }
+                    return data;
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+            return data;
+        }
+
+        public static BitmapImage ImageToBitMapImage(Bitmap image)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                image.Save(ms, ImageFormat.Bmp);
+                ms.Seek(0, SeekOrigin.Begin);
+
+                BitmapImage bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.StreamSource = ms;
+                bitmapImage.EndInit();
+
+                return bitmapImage;
+            }
+        }
+
         public static Bitmap GetImageFromDataObject(DataObject dataObject)
         {
             try

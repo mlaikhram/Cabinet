@@ -47,6 +47,7 @@ namespace Cabinet
             // tray icon
             notifyIcon = new NotifyIcon();
             //notifyIcon.DoubleClick += new EventHandler(notifyIcon_DoubleClick);
+            notifyIcon.Click += new EventHandler(NotifyIcon_Click);
             notifyIcon.Icon = Images.LOGO;
             notifyIcon.Visible = true;
             ContextMenuStrip contextMenuStrip = new ContextMenuStrip();
@@ -56,7 +57,7 @@ namespace Cabinet
             });
             contextMenuStrip.Items.Add("Quit", null, (sender, e) => {
                 Console.WriteLine("clicked quit in context menu");
-                System.Environment.Exit(0);
+                Environment.Exit(0);
             });
             notifyIcon.ContextMenuStrip = contextMenuStrip;
 
@@ -212,11 +213,11 @@ namespace Cabinet
             HideWindow();
         }
 
-        //void NotifyIcon_Click(object sender, EventArgs e)
-        //{
-        //    Console.WriteLine("clicked toolbar icon");
-        //    OpenWindow(null);
-        //}
+        void NotifyIcon_Click(object sender, EventArgs e)
+        {
+            Console.WriteLine("clicked toolbar icon");
+            //OpenWindow(null);
+        }
 
         private void Window_Closed(object sender, EventArgs e)
         {
