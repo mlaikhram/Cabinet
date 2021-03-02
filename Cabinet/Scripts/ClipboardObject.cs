@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Specialized;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,7 +18,6 @@ using IDataObject = System.Windows.Forms.IDataObject;
 using FileAttributes = System.IO.FileAttributes;
 using Image = System.Windows.Controls.Image;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Linq;
 
 namespace Cabinet

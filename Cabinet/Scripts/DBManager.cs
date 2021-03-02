@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.IO;
 using System.Linq;
-using System.Windows.Documents;
 using System.Windows.Media;
 
 namespace Cabinet
 {
     public class DBManager
     {
-        private static readonly string DB_FILE = "cabinet.db";
+        private static readonly string DB_FILE = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Cabinet", "cabinet.db");
         private static string CONNECTION_URI => string.Format(@"Data Source={0};version=3;", DB_FILE);
 
         private static DBManager instance = null;

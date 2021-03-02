@@ -12,20 +12,24 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		logo.ico = logo.ico
 	EndProjectSection
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Cabinet Installer", "Cabinet Installer\Cabinet Installer.vdproj", "{3BE9D8BF-EEDA-451F-8EA0-B126667823B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5C75C7F1-FFDF-41E6-92BA-394D3D14A342}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5C75C7F1-FFDF-41E6-92BA-394D3D14A342}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C75C7F1-FFDF-41E6-92BA-394D3D14A342}.Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{5C75C7F1-FFDF-41E6-92BA-394D3D14A342}.Debug|Any CPU.Build.0 = Release|Any CPU
 		{5C75C7F1-FFDF-41E6-92BA-394D3D14A342}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C75C7F1-FFDF-41E6-92BA-394D3D14A342}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C1286C82-6BE0-46D6-85E2-B81ABDC13756}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C1286C82-6BE0-46D6-85E2-B81ABDC13756}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1286C82-6BE0-46D6-85E2-B81ABDC13756}.Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{C1286C82-6BE0-46D6-85E2-B81ABDC13756}.Debug|Any CPU.Build.0 = Release|Any CPU
 		{C1286C82-6BE0-46D6-85E2-B81ABDC13756}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1286C82-6BE0-46D6-85E2-B81ABDC13756}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BE9D8BF-EEDA-451F-8EA0-B126667823B0}.Debug|Any CPU.ActiveCfg = Release
+		{3BE9D8BF-EEDA-451F-8EA0-B126667823B0}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

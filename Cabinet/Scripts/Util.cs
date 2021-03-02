@@ -23,9 +23,9 @@ namespace Cabinet
 {
     public static class Paths
     {
-        public static string[] ICONS => Directory.GetFiles(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Icons"), @"*.png");
-        public static string ICON_PATH(string name) => Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Icons", name + ".png");
-        public static string LOCAL_STORAGE_DIRECTORY => Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "LocalStorage");
+        public static string[] ICONS => Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "Icons"), @"*.png");
+        public static string ICON_PATH(string name) => Path.Combine(Directory.GetCurrentDirectory(), "Icons", name + ".png");
+        public static string LOCAL_STORAGE_DIRECTORY => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Cabinet", "LocalStorage");
         public static string LOCAL_STORAGE_FILE_PATH(string name) => Path.Combine(LOCAL_STORAGE_DIRECTORY, name); // TODO: create method to optimize folder by merging duplicate files
     }
 
@@ -93,7 +93,7 @@ namespace Cabinet
     [Serializable]
     public class SerializableDataObject
     {
-        private Dictionary<string, object> dataMap;
+        private readonly Dictionary<string, object> dataMap;
 
         private SerializableDataObject()
         {
@@ -190,7 +190,7 @@ namespace Cabinet
                     }
                     return data;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                 }
             }
