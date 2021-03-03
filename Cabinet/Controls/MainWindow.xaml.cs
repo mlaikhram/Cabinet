@@ -20,7 +20,9 @@ namespace Cabinet
     /// </summary>
     public partial class MainWindow : Window
     {
-        private NotifyIcon notifyIcon = null;
+        private static readonly int MAX_RECENTS = 20; // TODO: make this value configurable
+
+        private readonly NotifyIcon notifyIcon = null;
         //private LinkedList<ClipboardObject> recentClipboardObjects;
         private readonly List<Category> categories;
         public ReadOnlyCollection<Category> Categories => categories.AsReadOnly();
@@ -63,10 +65,12 @@ namespace Cabinet
             notifyIcon.ContextMenuStrip = contextMenuStrip;
 
             // keyboard shortcut
-            HotKeyController.Instance.RegisterHotKey("Open Cabinet", KeyModifiers.CONTROL | KeyModifiers.Alt | KeyModifiers.NOREPEAT, Keys.V, new Action<HotKey>(OpenWindow));
+            HotKeyController.Instance.RegisterHotKey("Open Cabinet", KeyModifiers.CONTROL | KeyModifiers.Alt | KeyModifiers.NOREPEAT, Keys.C, new Action<HotKey>(OpenWindow));
 
             // listen for clipboard changes
             ClipboardEventController.Instance.RegisterClipboardEvent("Add to Recents", new Action(SaveClipboardToRecent));
+
+            OpenWindow(null);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -186,6 +190,14 @@ namespace Cabinet
                         if (CurrentCategoryId == categories[0].Id)
                         {
                             ContentPanel.Children.Insert(1, newClipboardObject.ClipboardContainer);
+                        }
+                        if (categories[0].ClipboardObjects.Count() > MAX_RECENTS)
+                        {
+                            categories[0].RemoveClipboardObject(categories[0].ClipboardObjects.Last());
+                            if (CurrentCategoryId == categories[0].Id)
+                            {
+                                ContentPanel.Children.RemoveAt(categories[0].ClipboardObjects.Count() + 1);
+                            }
                         }
                     }
                 }

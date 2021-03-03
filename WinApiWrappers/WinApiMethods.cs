@@ -22,6 +22,7 @@ namespace WinApiWrappers
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern bool SetWindowDisplayAffinity(IntPtr hwnd, uint dwAffinity);
+
     }
     [Flags]
     public enum KeyModifiers : uint
