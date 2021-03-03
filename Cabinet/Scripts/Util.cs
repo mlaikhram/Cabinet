@@ -23,8 +23,9 @@ namespace Cabinet
 {
     public static class Paths
     {
-        public static string[] ICONS => Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "Icons"), @"*.png");
-        public static string ICON_PATH(string name) => Path.Combine(Directory.GetCurrentDirectory(), "Icons", name + ".png");
+        public static string EXE_DIRECTORY => Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).Replace("file:\\", "");
+        public static string[] ICONS => Directory.GetFiles(Path.Combine(EXE_DIRECTORY, "Icons"), @"*.png");
+        public static string ICON_PATH(string name) => Path.Combine(EXE_DIRECTORY, "Icons", name + ".png");
         public static string LOCAL_STORAGE_DIRECTORY => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Cabinet", "LocalStorage");
         public static string LOCAL_STORAGE_FILE_PATH(string name) => Path.Combine(LOCAL_STORAGE_DIRECTORY, name); // TODO: create method to optimize folder by merging duplicate files
     }

@@ -31,7 +31,7 @@ namespace Cabinet
 
         public MainWindow()
         {
-            Console.WriteLine("path to Icons: " + Directory.GetCurrentDirectory());
+            Console.WriteLine("path to Icons: " + Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).Replace("file:\\", ""));
             InitializeComponent();
             Directory.CreateDirectory(Paths.LOCAL_STORAGE_DIRECTORY);
             CategoryForm.ParentWindow = this;

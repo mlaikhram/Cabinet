@@ -5785,7 +5785,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Cabinet"
         "ProductCode" = "8:{514EAC9E-41D9-4C86-BE73-A8823E8ABD4D}"
-        "PackageCode" = "8:{FFBFC3A7-C91C-4986-AD52-785A7BB72C2D}"
+        "PackageCode" = "8:{029A69EB-BBE8-4443-9815-35AFAC78259B}"
         "UpgradeCode" = "8:{A231C265-875C-443B-ADA1-9AEC0DB38F92}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
@@ -5885,6 +5885,100 @@
             {
                 "Keys"
                 {
+                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_8342E6E6ED3643508DC4083629C17156"
+                    {
+                    "Name" = "8:Directory"
+                    "Condition" = "8:"
+                    "AlwaysCreate" = "11:FALSE"
+                    "DeleteAtUninstall" = "11:FALSE"
+                    "Transitive" = "11:FALSE"
+                        "Keys"
+                        {
+                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_38B9D2B6258D47C4BC11701EFEDDA7F0"
+                            {
+                            "Name" = "8:Background"
+                            "Condition" = "8:"
+                            "AlwaysCreate" = "11:FALSE"
+                            "DeleteAtUninstall" = "11:FALSE"
+                            "Transitive" = "11:FALSE"
+                                "Keys"
+                                {
+                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_1D1520E21D594923A77FCA54745B7FFD"
+                                    {
+                                    "Name" = "8:shell"
+                                    "Condition" = "8:"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "DeleteAtUninstall" = "11:FALSE"
+                                    "Transitive" = "11:FALSE"
+                                        "Keys"
+                                        {
+                                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_B5FB01D9B8E34191B2F6BA515D45719E"
+                                            {
+                                            "Name" = "8:cabinet_menu"
+                                            "Condition" = "8:"
+                                            "AlwaysCreate" = "11:FALSE"
+                                            "DeleteAtUninstall" = "11:FALSE"
+                                            "Transitive" = "11:FALSE"
+                                                "Keys"
+                                                {
+                                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_5851F27C3F4F498C9F333C2D50FC2B91"
+                                                    {
+                                                    "Name" = "8:command"
+                                                    "Condition" = "8:"
+                                                    "AlwaysCreate" = "11:FALSE"
+                                                    "DeleteAtUninstall" = "11:FALSE"
+                                                    "Transitive" = "11:FALSE"
+                                                        "Keys"
+                                                        {
+                                                        }
+                                                        "Values"
+                                                        {
+                                                            "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_D1ADDCB8BE1A421097C532B26646A151"
+                                                            {
+                                                            "Name" = "8:"
+                                                            "Condition" = "8:"
+                                                            "Transitive" = "11:FALSE"
+                                                            "ValueTypes" = "3:1"
+                                                            "Value" = "8:\"[TARGETDIR]Cabinet.exe\""
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                "Values"
+                                                {
+                                                    "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_245F5519317D4A50A71AE828330CFF95"
+                                                    {
+                                                    "Name" = "8:Icon"
+                                                    "Condition" = "8:"
+                                                    "Transitive" = "11:FALSE"
+                                                    "ValueTypes" = "3:1"
+                                                    "Value" = "8:[TARGETDIR]Cabinet.exe"
+                                                    }
+                                                    "{ADCFDA98-8FDD-45E4-90BC-E3D20B029870}:_9AD7D96486C54B709EEEB93F533CE897"
+                                                    {
+                                                    "Name" = "8:"
+                                                    "Condition" = "8:"
+                                                    "Transitive" = "11:FALSE"
+                                                    "ValueTypes" = "3:1"
+                                                    "Value" = "8:Open Cabinet"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        "Values"
+                                        {
+                                        }
+                                    }
+                                }
+                                "Values"
+                                {
+                                }
+                            }
+                        }
+                        "Values"
+                        {
+                        }
+                    }
                 }
             }
             "HKU"
